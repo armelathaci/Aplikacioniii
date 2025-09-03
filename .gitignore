@@ -1,0 +1,12 @@
+# Dependencies
+backend/node_modules
+
+# Environment Variables
+backend/.env
+
+# Sensitive Configuration
+backend/utils/config.js
+
+# Database setup scripts
+backend/setup-database.js
+

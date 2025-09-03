@@ -1,0 +1,79 @@
+{
+  "id": "elioti-env-001",
+  "name": "Elioti Backend - Local",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "project_path",
+      "value": "C:/Users/PULSE Electronics/OneDrive/Desktop/Aplikacionii",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "backend_path",
+      "value": "{{project_path}}/backend",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "frontend_path",
+      "value": "{{project_path}}/frontend",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "email",
+      "value": "test@example.com",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "password",
+      "value": "Test123!",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "full_name",
+      "value": "Test User",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "day",
+      "value": "15",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "month",
+      "value": "01",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "year",
+      "value": "1990",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

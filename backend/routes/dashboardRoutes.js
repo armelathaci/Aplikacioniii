@@ -88,11 +88,11 @@ class DashboardRoutes extends BaseRoutes {
             }
 
             // These are placeholders and can be developed further
-            insights.push({ type: 'warning', text: 'Pagesa e internetit skadon pas 2 ditësh.' });
-            insights.push({ type: 'danger', text: 'Keni tejkaluar buxhetin për Ushqime këtë muaj.' });
-            insights.push({ type: 'info', text: 'Keni kursyer më shumë këtë muaj!' });
+            //insights.push({ type: 'warning', text: 'Pagesa e internetit skadon pas 2 ditësh.' });
+            //insights.push({ type: 'danger', text: 'Keni tejkaluar buxhetin për Ushqime këtë muaj.' });
+            //insights.push({ type: 'info', text: 'Keni kursyer më shumë këtë muaj!' });
 
-            return insights.slice(0, 4);
+            return insights; //.slice(0, 4);
         } catch (error) {
             throw new Error(`Failed to generate dashboard insights: ${error.message}`);
         }

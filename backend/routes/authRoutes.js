@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const Validators = require('../utils/validators');
 const ErrorHandler = require('../middleware/errorHandler');
-const config = require('./utils/config');
+const config = require('../utils/config');
 const BaseRoutes = require('./BaseRoutes');
 
 class AuthRoutes extends BaseRoutes {

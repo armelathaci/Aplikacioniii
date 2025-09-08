@@ -6,25 +6,21 @@ const http = require('http');
 const url = require('url');
 
 // Core modules
-// Core modules
-const config = require('./backend/utils/config');
-const ErrorHandler = require('./backend/middleware/errorHandler');
-const DatabaseManager = require('./backend/services/databaseManager');
-const SessionManager = require('./backend/services/sessionManager');
-const EmailService = require('./backend/services/emailService');
-const AuthMiddleware = require('./backend/middleware/authMiddleware');
-const RateLimiter = require('./backend/middleware/rateLimiter');
-
-// --- CORRECTED: All necessary route handlers are included ---
-const authRoutes = require('./backend/routes/authRoutes');
-const userRoutes = require('./backend/routes/userRoutes');
-const transactionRoutes = require('./backend/routes/transactionRoutes');
-const goalRoutes = require('./backend/routes/goalRoutes');
-const settingsRoutes = require('./backend/routes/settingsRoutes');
-const helpRoutes = require('./backend/routes/helpRoutes');
-const aiChatRoutes = require('./backend/routes/aiChatRoutes');
-const dashboardRoutes = require('./backend/routes/dashboardRoutes');
-// profileRoutes is the only one that can be removed as its logic is fully in userRoutes
+const config = require('./utils/config');
+const ErrorHandler = require('./middleware/errorHandler');
+const DatabaseManager = require('./services/databaseManager');
+const SessionManager = require('./services/sessionManager');
+const EmailService = require('./services/emailService');
+const AuthMiddleware = require('./middleware/authMiddleware');
+const RateLimiter = require('./middleware/rateLimiter');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const transactionRoutes = require('./routes/transactionRoutes');
+const goalRoutes = require('./routes/goalRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
+const helpRoutes = require('./routes/helpRoutes');
+const aiChatRoutes = require('./routes/aiChatRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');// profileRoutes is the only one that can be removed as its logic is fully in userRoutes
 // const profileRoutes = require('./routes/profileRoutes'); // REMOVED
 
 

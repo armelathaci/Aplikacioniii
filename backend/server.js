@@ -6,7 +6,7 @@ const http = require('http');
 const url = require('url');
 
 // Core modules
-const config = require('./utils/config');
+const config = require('../utils/config');
 const ErrorHandler = require('./middleware/errorHandler');
 const DatabaseManager = require('./services/databaseManager');
 const SessionManager = require('./services/sessionManager');

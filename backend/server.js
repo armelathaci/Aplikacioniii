@@ -5,6 +5,8 @@ require('dotenv').config();
 const http = require('http');
 const url = require('url');
 
+
+
 // Core modules
 const config = require('./utils/config');
 const ErrorHandler = require('./middleware/errorHandler');
@@ -53,7 +55,7 @@ class EliotiServer {
             config.validate();
             await this.databaseManager.connect();
             this.server = http.createServer(this.handleRequest.bind(this));
-            this.server.listen(config.server.port, config.server.host, () => {
+            this.server.listen(config.server.port,  '0.0.0.0', () => {
                 console.log(`🚀 Elioti server running on ${config.server.host}:${config.server.port}`);
                 console.log(`🔧 Environment: ${config.server.environment}`);
             });

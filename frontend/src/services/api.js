@@ -1,6 +1,6 @@
 // frontend/src/services/api.js
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 // A helper function to manage all API requests
 async function fetchApi(path, options = {}) {

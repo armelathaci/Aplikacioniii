@@ -8,3 +8,5 @@ backend/.env
 
 # Database setup scripts
 
+frontend/build
+

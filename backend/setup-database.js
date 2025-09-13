@@ -22,12 +22,13 @@ console.log('DB_FORCE:', process.env.DB_FORCE);
 class DatabaseSetup {
     constructor() {
         // Use your database configuration directly
-        this.config = {
-            host: 'mainline.proxy.rlwy.net',
-    port: 20325,
-    name: 'railway',
-    user: 'root', 
-    password: 'IwBTmeJadUKdebodgvwkDPWyDmsGyKJQ'
+        this.config = {  
+            host: process.env.DB_HOST,
+            port: process.env.DB_PORT,
+            name: process.env.DB_NAME,
+            user: process.env.DB_USER, 
+            password: process.env.DB_PASSWORD
+        
         };
         
         // Debug: Print configuration (without password)

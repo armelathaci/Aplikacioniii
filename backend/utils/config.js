@@ -90,11 +90,12 @@ const config = {
 
    // Konfigurimi i database (për të ardhmen)
     database: {
-    host: 'mainline.proxy.rlwy.net',
-    port: 20325,
-    name: 'railway',
-    user: 'root', 
-    password: 'IwBTmeJadUKdebodgvwkDPWyDmsGyKJQ'
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    name: process.env.DB_NAME,
+    user: process.env.DB_USER, 
+    password: process.env.DB_PASSWORD
+
     },
 
     // Konfigurimi i logging

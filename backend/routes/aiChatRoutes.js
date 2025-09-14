@@ -188,8 +188,9 @@ class AIChatRoutes {
                 [messageId, conversationId, userId, 'user', message, messageType, userMessage.tokens, timestamp]
             );
             
-            // Generate AI response
-            const aiResponse = await this.generateAIResponse(history, conversation.model);
+            // --- THIS IS THE FIX ---
+// Pass the entire request object's user property to the function
+    const aiResponse = await this.generateAIResponse(history, conversation.model, req.user);
             
             // Add AI response to history
             const aiMessageId = Validators.generateSecureId();
@@ -774,7 +775,7 @@ class AIChatRoutes {
     // --- HELPER FUNCTIONS ---
 
     // --- MODIFIED FUNCTION WITH DEBUGGING LOGS ---
-    async generateAIResponse(history, model) {
+    async generateAIResponse(history, model, user) {
         const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
 
         if (!n8nWebhookUrl) {
@@ -789,7 +790,9 @@ class AIChatRoutes {
             const requestBody = {
                 model: model,
                 messages: history.messages,
-                context: history.context || ''
+                context: history.context || '',
+                userId: user.userId, // Add the userId
+                token: user.token      // Add the auth token
             };
 
             // --- ADDED LOG ---

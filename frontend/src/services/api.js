@@ -78,3 +78,44 @@ export const updateSettings = (data) => fetchApi('/settings/notifications', { me
 // --- AI Chat Functions ---
 export const startAIChat = (topic = 'General') => fetchApi('/ai-chat/start', { method: 'POST', body: JSON.stringify({ topic }) });
 export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/message', { method: 'POST', body: JSON.stringify({ conversationId, message }) });
+
+// --- Finbot Webhook Function ---
+export const sendToFinbotWebhook = async (userId, conversationId, message) => {
+  const webhookUrl = 'https://n8nlocal.me/webhook/n8n';
+  
+  const payload = {
+    message: message,
+    user_id: userId,
+    sessionId: conversationId,
+    timestamp: new Date().toISOString(),
+    lang: "auto",
+    context: {
+      app: "finbot",
+      currency: "EUR"
+    }
+  };
+
+  try {
+    console.log('Sending message to Finbot webhook:', payload);
+    
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+    console.log('Finbot webhook response:', responseData);
+    
+    return responseData;
+  } catch (error) {
+    console.error('Error sending message to Finbot webhook:', error);
+    throw error;
+  }
+};

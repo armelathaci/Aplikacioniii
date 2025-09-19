@@ -81,7 +81,7 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 
 // --- Finbot Webhook Function ---
 export const sendToFinbotWebhook = async (userId, conversationId, message) => {
-  const webhookUrl = 'https://n8nlocal.me/webhook/n8n';
+  const webhookUrl = 'https://ruajmencur.me/webhook/n8n';
   
   const payload = {
     message: message,

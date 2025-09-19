@@ -55,7 +55,7 @@ class EmailService {
     async sendPasswordResetLink(email, token) {
         // IMPORTANT: In production, change 'localhost:3000' to your actual frontend domain name.
         // For now, this points to your React development server.
-        const resetLink = `http://localhost:3000/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
+        const resetLink = `https://ruajmencur.me/reset-password?token=${token}&email=${encodeURIComponent(email)}`;
 
         const mailOptions = {
             from: `Elioti <${process.env.EMAIL_USER}>`,

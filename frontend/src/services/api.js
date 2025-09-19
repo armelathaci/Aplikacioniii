@@ -79,9 +79,41 @@ export const updateSettings = (data) => fetchApi('/settings/notifications', { me
 export const startAIChat = (topic = 'General') => fetchApi('/ai-chat/start', { method: 'POST', body: JSON.stringify({ topic }) });
 export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/message', { method: 'POST', body: JSON.stringify({ conversationId, message }) });
 
-// --- Finbot Webhook Function ---
+// --- Finbot Webhook Functions ---
+
+// New centralized helper function for sending messages to Finbot
+export const sendMessageToFinbot = async (userMessage, userId) => {
+  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://ruajmencur.me/webhook/n8n';
+  
+  try {
+    console.log('Sending message to Finbot webhook:', { userMessage, userId });
+    
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: userMessage,
+        userId: userId,
+        timestamp: new Date().toISOString(),
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error sending message to Finbot webhook:', error);
+    return { error: true, message: error.message };
+  }
+};
+
+// Legacy function for backward compatibility
 export const sendToFinbotWebhook = async (userId, conversationId, message) => {
-  const webhookUrl = 'https://ruajmencur.me/webhook/n8n';
+  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://ruajmencur.me/webhook/n8n';
   
   const payload = {
     message: message,

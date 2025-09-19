@@ -25,7 +25,7 @@ class DatabaseSetup {
         this.config = {  
             host: process.env.DB_HOST,
             port: process.env.DB_PORT,
-            name: process.env.DB_NAME,
+            database: process.env.DB_NAME,
             user: process.env.DB_USER, 
             password: process.env.DB_PASSWORD
         
@@ -143,15 +143,100 @@ console.log('✅ Goals table created/updated');
                 CREATE TABLE IF NOT EXISTS ai_conversations (
                     id VARCHAR(64) PRIMARY KEY,
                     user_id VARCHAR(64) NOT NULL,
-                    session_id VARCHAR(64) NOT NULL,
-                    message TEXT NOT NULL,
-                    response TEXT NOT NULL,
-                    context VARCHAR(50),
+                    topic VARCHAR(200),
+                    context TEXT,
+                    model VARCHAR(50) DEFAULT 'gpt-3.5-turbo',
+                    status ENUM('active', 'paused', 'ended', 'cleared') DEFAULT 'active',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
                 )
             `);
             console.log('✅ AI conversations table created');
+
+            // AI Chat messages table
+            await this.connection.execute(`
+                CREATE TABLE IF NOT EXISTS ai_messages (
+                    id VARCHAR(64) PRIMARY KEY,
+                    conversation_id VARCHAR(64) NOT NULL,
+                    user_id VARCHAR(64),
+                    role ENUM('user', 'assistant', 'system') NOT NULL,
+                    content TEXT NOT NULL,
+                    message_type VARCHAR(20) DEFAULT 'text',
+                    tokens INT DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (conversation_id) REFERENCES ai_conversations(id) ON DELETE CASCADE,
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+                )
+            `);
+            console.log('✅ AI messages table created');
+
+            // AI Chat settings table
+            await this.connection.execute(`
+                CREATE TABLE IF NOT EXISTS ai_chat_settings (
+                    id VARCHAR(64) PRIMARY KEY,
+                    user_id VARCHAR(64) NOT NULL UNIQUE,
+                    default_model VARCHAR(50) DEFAULT 'gpt-3.5-turbo',
+                    max_tokens INT DEFAULT 4000,
+                    temperature DECIMAL(2,1) DEFAULT 0.7,
+                    max_conversations INT DEFAULT 10,
+                    auto_save BOOLEAN DEFAULT TRUE,
+                    context_window INT DEFAULT 10,
+                    language VARCHAR(10) DEFAULT 'en',
+                    theme VARCHAR(20) DEFAULT 'light',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                )
+            `);
+            console.log('✅ AI chat settings table created');
+
+            // AI Chat logs table
+            await this.connection.execute(`
+                CREATE TABLE IF NOT EXISTS ai_chat_logs (
+                    id VARCHAR(64) PRIMARY KEY,
+                    conversation_id VARCHAR(64),
+                    user_id VARCHAR(64),
+                    action VARCHAR(50) NOT NULL,
+                    details TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (conversation_id) REFERENCES ai_conversations(id) ON DELETE CASCADE,
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+                )
+            `);
+            console.log('✅ AI chat logs table created');
+
+            // AI Message feedback table
+            await this.connection.execute(`
+                CREATE TABLE IF NOT EXISTS ai_message_feedback (
+                    id VARCHAR(64) PRIMARY KEY,
+                    conversation_id VARCHAR(64) NOT NULL,
+                    message_id VARCHAR(64) NOT NULL,
+                    user_id VARCHAR(64) NOT NULL,
+                    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+                    feedback TEXT,
+                    feedback_type VARCHAR(50) DEFAULT 'other',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (conversation_id) REFERENCES ai_conversations(id) ON DELETE CASCADE,
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                )
+            `);
+            console.log('✅ AI message feedback table created');
+
+            // AI Chat suggestions table
+            await this.connection.execute(`
+                CREATE TABLE IF NOT EXISTS ai_chat_suggestions (
+                    id VARCHAR(64) PRIMARY KEY,
+                    category VARCHAR(50) NOT NULL,
+                    suggestion TEXT NOT NULL,
+                    priority INT DEFAULT 1,
+                    usage_count INT DEFAULT 0,
+                    is_active BOOLEAN DEFAULT TRUE,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+            console.log('✅ AI chat suggestions table created');
 
             // Help tickets table
             await this.connection.execute(`

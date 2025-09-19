@@ -189,8 +189,8 @@ class AIChatRoutes {
             );
             
             // --- THIS IS THE FIX ---
-// Pass the entire request object's user property to the function
-    const aiResponse = await this.generateAIResponse(history, conversation.model, req.user);
+            // Pass the entire request object's user property to the function
+            const aiResponse = await this.generateAIResponse(history, conversation.model, req.user);
             
             // Add AI response to history
             const aiMessageId = Validators.generateSecureId();

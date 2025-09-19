@@ -110,7 +110,27 @@ export const sendToFinbotWebhook = async (userId, conversationId, message) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const responseData = await response.json();
+    // Check if response has content
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      console.warn('Finbot webhook returned non-JSON response');
+      return { reply: 'Webhook response not in JSON format', content: 'Webhook response not in JSON format', tokens: 0 };
+    }
+
+    const responseText = await response.text();
+    if (!responseText.trim()) {
+      console.warn('Finbot webhook returned empty response');
+      return { reply: 'Empty response from webhook', content: 'Empty response from webhook', tokens: 0 };
+    }
+
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Failed to parse JSON response:', parseError);
+      throw new Error('Invalid JSON response from webhook');
+    }
+
     console.log('Finbot webhook response:', responseData);
     
     return responseData;

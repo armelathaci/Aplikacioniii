@@ -22,7 +22,8 @@ const goalRoutes = require('./routes/goalRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const helpRoutes = require('./routes/helpRoutes');
 const aiChatRoutes = require('./routes/aiChatRoutes');
-const dashboardRoutes = require('./routes/dashboardRoutes');// profileRoutes is the only one that can be removed as its logic is fully in userRoutes
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');// profileRoutes is the only one that can be removed as its logic is fully in userRoutes
 // const profileRoutes = require('./routes/profileRoutes'); // REMOVED
 
 
@@ -44,7 +45,8 @@ class EliotiServer {
             '/settings': settingsRoutes, // <-- RE-ADDED
             '/help': helpRoutes,
             '/ai-chat': aiChatRoutes,
-            '/dashboard': dashboardRoutes
+            '/dashboard': dashboardRoutes,
+            '/webhook': webhookRoutes
         };
         
         this.server = null;

@@ -1,11 +1,11 @@
-e njejta gje , kjo eshte klasaa ime aichat import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaBars, FaTimes, FaHome, FaExchangeAlt, FaBullseye, FaRobot, FaCog, FaQuestionCircle } from 'react-icons/fa';
 import './AIChat.css';
 import logo from '../../img/logo1.png';
 import { startAIChat, sendMessageToAI, sendMessageToFinbot } from '../../services/api';
 
 const AIChat = ({onNavigate, user }) => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]);s
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);

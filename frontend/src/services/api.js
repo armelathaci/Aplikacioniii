@@ -83,21 +83,28 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 
 export async function sendMessageToFinbot(userMessage) {
   try {
-    const response = await fetch("https://n8nlocal.me/webhook/n8n", {   // 👈 përdor URL absolute të saktë
+    const response = await fetch("https://n8nlocal.me/webhook/n8n", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        message: userMessage,
-      }),
+      body: JSON.stringify({ message: userMessage }),
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return await response.json();
+    // Merr tekstin dhe provo ta kthesh në JSON
+    const text = await response.text();
+    let data;
+    try {
+      data = text ? JSON.parse(text) : {};  // nëse është bosh, kthe objekt bosh
+    } catch (e) {
+      data = { raw: text }; // nëse nuk është JSON valid, kthe raw tekstin
+    }
+
+    return data;
   } catch (error) {
     console.error("Error sending message to Finbot webhook:", error);
     throw error;

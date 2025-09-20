@@ -60,15 +60,28 @@ const AIChat = ({onNavigate, user }) => {
     try {
       // Send message to Finbot webhook
       try {
-        const finbotResponse = await sendMessageToFinbot(currentInput);
-        if (finbotResponse.error) {
-          console.warn('Finbot webhook failed:', finbotResponse.message);
-        } else {
-          console.log('Finbot webhook success:', finbotResponse);
-        }
-      } catch (webhookError) {
-        console.warn('Finbot webhook failed, but continuing with AI chat:', webhookError);
-        // Continue with normal AI chat even if webhook fails
+        const reply = await sendMessageToFinbot(currentInput);
+
+        // Sigurohu që reply ka diçka
+        const botMessage = reply.reply || reply.message || "AI nuk ktheu përgjigje.";
+        
+        const finbotMessage = {
+          id: Date.now(),
+          text: botMessage,
+          sender: 'finbot',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, finbotMessage]);
+
+      } catch (error) {
+        console.error("Finbot webhook failed:", error);
+        const errorMessage = {
+          id: Date.now(),
+          text: "Gabim gjatë komunikimit me AI.",
+          sender: 'finbot',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, errorMessage]);
       }
 
       const data = await sendMessageToAI(conversationId, currentInput);

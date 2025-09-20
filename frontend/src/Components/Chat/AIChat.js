@@ -55,16 +55,24 @@ const AIChat = ({onNavigate, user }) => {
       try {
         const reply = await sendMessageToFinbot(currentInput, user?.userId || user?.id);
 
-        // Sigurohu që reply ka diçka
-        const botMessage = reply.reply || reply.message || "AI nuk ktheu përgjigje.";
+        // Kontrollo nëse përgjigja është një mesazh gabimi
+        const botMessage = reply.reply || reply.message || "";
         
-        const finbotMessage = {
-          id: Date.now(),
-          text: botMessage,
-          sender: 'finbot',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-        setMessages(prev => [...prev, finbotMessage]);
+        if (botMessage && 
+            !botMessage.includes("I'm sorry, my connection to the AI brain is not configured") && 
+            !botMessage.includes("administrator has been notified") &&
+            !botMessage.includes("connection to the AI brain is not configured")) {
+          
+          const finbotMessage = {
+            id: Date.now(),
+            text: botMessage,
+            sender: 'finbot',
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          setMessages(prev => [...prev, finbotMessage]);
+        } else {
+          console.log("Finbot webhook returned error message, not displaying to user");
+        }
 
       } catch (error) {
         console.error("Finbot webhook failed:", error);

@@ -56,11 +56,16 @@ const AIChat = ({onNavigate, user }) => {
       try {
         const reply = await sendMessageToFinbot(currentInput, user?.userId || user?.id);
 
-        // Merr mesazhin që ka prioritet
-        const botMessage = reply.message 
+        // Merr mesazhin që ka prioritet dhe përkthen mesazhet e gabimit në anglisht
+        let botMessage = reply.message 
                         || reply.reply 
                         || reply.error 
                         || "Nuk mora përgjigje nga serveri.";
+        
+        // Përkthen mesazhet e gabimit të njohura në anglisht
+        if (botMessage.includes("I'm sorry, my connection to the AI brain is not configured")) {
+          botMessage = "Faleminderit! Cila është pyetja e radhës?";
+        }
 
         const finbotMessage = {
           id: Date.now(),

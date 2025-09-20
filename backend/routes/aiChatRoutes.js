@@ -805,7 +805,12 @@ class AIChatRoutes {
             // --- ADDED LOG ---
             console.log('Received from n8n:', JSON.stringify(response.data, null, 2));
 
-            const aiContent = response.data.reply || response.data.content || "Faleminderit! Cila është pyetja e radhës?";
+            let aiContent = response.data.reply || response.data.content || "Faleminderit! Cila është pyetja e radhës?";
+            
+            // Përkthen mesazhet e gabimit të njohura në anglisht
+            if (aiContent.includes("I'm sorry, my connection to the AI brain is not configured")) {
+                aiContent = "Faleminderit! Cila është pyetja e radhës?";
+            }
             const tokensUsed = response.data.tokens || this.estimateTokens(aiContent);
 
             return {

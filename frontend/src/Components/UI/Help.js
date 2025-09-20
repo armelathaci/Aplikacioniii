@@ -1,5 +1,5 @@
 // Importimi i librarive të nevojshme nga React
-import { useState } from 'react';
+import React, { useState } from 'react';
 // Importimi i ikonave nga react-icons
 import { FaHome, FaExchangeAlt, FaBullseye, FaRobot, FaCog, FaQuestionCircle, FaBars, FaTimes, FaPlus, FaMinus, FaBook, FaShieldAlt, FaEnvelope, FaExclamationTriangle } from 'react-icons/fa';
 import './Help.css';

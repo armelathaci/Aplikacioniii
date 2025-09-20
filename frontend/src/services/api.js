@@ -81,17 +81,16 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 
 // --- Finbot Webhook Functions ---
 
-// New centralized helper function for sending messages to Finbot
-export const sendMessageToFinbot = async (userMessage) => {
+export async function sendMessageToFinbot(userMessage) {
   try {
-    console.log('Sending message to Finbot webhook:', { userMessage });
-    
-    const response = await fetch("https://n8nlocal.me/webhook/n8n", {
+    const response = await fetch("https://n8nlocal.me/webhook/n8n", {   // 👈 përdor URL absolute të saktë
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message: userMessage })
+      body: JSON.stringify({
+        message: userMessage,
+      }),
     });
 
     if (!response.ok) {
@@ -100,10 +99,10 @@ export const sendMessageToFinbot = async (userMessage) => {
 
     return await response.json();
   } catch (error) {
-    console.error('Error sending message to Finbot webhook:', error);
-    return { error: true, message: error.message };
+    console.error("Error sending message to Finbot webhook:", error);
+    throw error;
   }
-};
+}
 
 // Legacy function for backward compatibility
 export const sendToFinbotWebhook = async (userId, conversationId, message) => {

@@ -5,7 +5,7 @@ import logo from '../../img/logo1.png';
 import { startAIChat, sendMessageToAI, sendMessageToFinbot } from '../../services/api';
 
 const AIChat = ({onNavigate, user }) => {
-  const [messages, setMessages] = useState([]);s
+  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);

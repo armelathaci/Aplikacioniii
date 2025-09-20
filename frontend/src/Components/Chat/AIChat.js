@@ -60,7 +60,7 @@ const AIChat = ({onNavigate, user }) => {
     try {
       // Send message to Finbot webhook
       try {
-        const finbotResponse = await sendMessageToFinbot(currentInput, user?.userId || user?.id);
+        const finbotResponse = await sendMessageToFinbot(currentInput, conversationId);
         if (finbotResponse.error) {
           console.warn('Finbot webhook failed:', finbotResponse.message);
         } else {

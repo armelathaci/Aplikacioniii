@@ -82,11 +82,11 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 // --- Finbot Webhook Functions ---
 
 // New centralized helper function for sending messages to Finbot
-export const sendMessageToFinbot = async (userMessage, userId) => {
-  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://ruajmencur.me/webhook/n8n';
+export const sendMessageToFinbot = async (userMessage, sessionId) => {
+  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://n8nlocal.me/webhook/n8n';
   
   try {
-    console.log('Sending message to Finbot webhook:', { userMessage, userId });
+    console.log('Sending message to Finbot webhook:', { userMessage, sessionId });
     
     const response = await fetch(webhookUrl, {
       method: 'POST',
@@ -95,8 +95,7 @@ export const sendMessageToFinbot = async (userMessage, userId) => {
       },
       body: JSON.stringify({
         message: userMessage,
-        userId: userId,
-        timestamp: new Date().toISOString(),
+        sessionId: sessionId
       })
     });
 
@@ -113,59 +112,27 @@ export const sendMessageToFinbot = async (userMessage, userId) => {
 
 // Legacy function for backward compatibility
 export const sendToFinbotWebhook = async (userId, conversationId, message) => {
-  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://ruajmencur.me/webhook/n8n';
+  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://n8nlocal.me/webhook/n8n';
   
-  const payload = {
-    message: message,
-    user_id: userId,
-    sessionId: conversationId,
-    timestamp: new Date().toISOString(),
-    lang: "auto",
-    context: {
-      app: "finbot",
-      currency: "EUR"
-    }
-  };
-
   try {
-    console.log('Sending message to Finbot webhook:', payload);
+    console.log('Sending message to Finbot webhook:', { message, sessionId: conversationId });
     
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        message: message,
+        sessionId: conversationId
+      })
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // Check if response has content
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      console.warn('Finbot webhook returned non-JSON response');
-      return { reply: 'Webhook response not in JSON format', content: 'Webhook response not in JSON format', tokens: 0 };
-    }
-
-    const responseText = await response.text();
-    if (!responseText.trim()) {
-      console.warn('Finbot webhook returned empty response');
-      return { reply: 'Empty response from webhook', content: 'Empty response from webhook', tokens: 0 };
-    }
-
-    let responseData;
-    try {
-      responseData = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Failed to parse JSON response:', parseError);
-      throw new Error('Invalid JSON response from webhook');
-    }
-
-    console.log('Finbot webhook response:', responseData);
-    
-    return responseData;
+    return await response.json();
   } catch (error) {
     console.error('Error sending message to Finbot webhook:', error);
     throw error;

@@ -35,18 +35,6 @@ const AIChat = ({onNavigate, user }) => {
 
   useEffect(scrollToBottom, [messages]);
 
-  // Helper function to check if message is an error
-  const isErrorMessage = (message) => {
-    if (!message) return true;
-    const errorPatterns = [
-      "I'm sorry, my connection to the AI brain is not configured",
-      "administrator has been notified",
-      "connection to the AI brain is not configured",
-      "AI brain is not configured",
-      "connection to the AI brain"
-    ];
-    return errorPatterns.some(pattern => message.includes(pattern));
-  };
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || !conversationId) return;
@@ -68,20 +56,16 @@ const AIChat = ({onNavigate, user }) => {
       try {
         const reply = await sendMessageToFinbot(currentInput, user?.userId || user?.id);
 
-        // Kontrollo nëse përgjigja është një mesazh gabimi
-        const botMessage = reply.reply || reply.message || "";
+        // Prioritize reply.message, then reply.reply, then fallback
+        const botMessage = reply.message || reply.reply || "Nuk mora përgjigje nga serveri.";
         
-        if (botMessage && !isErrorMessage(botMessage)) {
-          const finbotMessage = {
-            id: Date.now(),
-            text: botMessage,
-            sender: 'finbot',
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          };
-          setMessages(prev => [...prev, finbotMessage]);
-        } else {
-          console.log("Finbot webhook returned error message, not displaying to user");
-        }
+        const finbotMessage = {
+          id: Date.now(),
+          text: botMessage,
+          sender: 'finbot',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, finbotMessage]);
 
       } catch (error) {
         console.error("Finbot webhook failed:", error);
@@ -98,20 +82,15 @@ const AIChat = ({onNavigate, user }) => {
       try {
         const data = await sendMessageToAI(conversationId, currentInput);
         
-        const aiContent = data.aiResponse.content;
+        const aiContent = data.aiResponse.content || "Nuk mora përgjigje nga serveri.";
         
-        // Kontrollo nëse përgjigja është një mesazh gabimi
-        if (aiContent && !isErrorMessage(aiContent)) {
-          const aiMessage = {
-            id: data.aiResponse.id,
-            text: aiContent,
-            sender: 'ai',
-            timestamp: new Date(data.aiResponse.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          };
-          setMessages(prev => [...prev, aiMessage]);
-        } else {
-          console.log("Backend AI returned error message, not displaying to user");
-        }
+        const aiMessage = {
+          id: data.aiResponse.id,
+          text: aiContent,
+          sender: 'ai',
+          timestamp: new Date(data.aiResponse.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, aiMessage]);
       } catch (error) {
         console.error("Backend AI failed:", error);
         const errorMessage = {

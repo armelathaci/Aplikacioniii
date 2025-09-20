@@ -532,7 +532,7 @@
 /* Sidebar Header */
 .sidebar-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* Center the logo instead of space-between */
   align-items: center;
   margin-bottom: 24px;
   width: 100%;
@@ -560,14 +560,7 @@
 }
 
 .collapse-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: #b2dfdb;
-  padding: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: all 0.2s ease;
+  display: none; /* Hide the X button */
 }
 
 .collapse-btn:hover {
@@ -667,6 +660,10 @@
 .sidebar.collapsed .sidebar-header {
   justify-content: center;
   padding: 0 16px;
+}
+
+.sidebar.collapsed .collapse-btn {
+  display: none; /* Ensure collapse button is hidden in collapsed state too */
 }
 
 .sidebar.collapsed .sidebar-nav {

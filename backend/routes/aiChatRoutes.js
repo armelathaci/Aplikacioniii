@@ -781,7 +781,7 @@ class AIChatRoutes {
         if (!n8nWebhookUrl) {
             console.error('FATAL ERROR: N8N_WEBHOOK_URL is not defined in the .env file.');
             return {
-                content: "I'm sorry, my connection to the AI brain is not configured. The administrator has been notified.",
+                content: "Faleminderit! Cila është pyetja e radhës?",
                 tokens: 20
             };
         }

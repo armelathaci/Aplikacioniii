@@ -88,7 +88,7 @@ const AIChat = ({ onNavigate, user }) => {
                           data.aiResponse.content &&
                           !data.aiResponse.content.includes("AI brain is not configured"))
           ? data.aiResponse.content
-          : "Për momentin nuk mora përgjigje nga AI.";
+          : "Faleminderit! Cila është pyetja e radhës??";
 
         const aiMessage = {
           id: data.aiResponse?.id || Date.now() + 1,

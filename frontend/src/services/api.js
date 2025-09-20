@@ -81,7 +81,7 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 
 // --- Finbot Webhook Functions ---
 
-export async function sendMessageToFinbot(userMessage) {
+export async function sendMessageToFinbot(userMessage, userId) {
   try {
     const sessionId = Date.now();
     const response = await fetch("https://n8nlocal.me/webhook/n8n", {
@@ -91,7 +91,8 @@ export async function sendMessageToFinbot(userMessage) {
       },
       body: JSON.stringify({ 
         message: userMessage,
-        sessionId: sessionId
+        sessionId: sessionId,
+        userId: userId
       }),
     });
 
@@ -119,7 +120,7 @@ export async function sendMessageToFinbot(userMessage) {
 export const sendToFinbotWebhook = async (userId, conversationId, message) => {
   try {
     const sessionId = Date.now();
-    console.log('Sending message to Finbot webhook:', { message, sessionId });
+    console.log('Sending message to Finbot webhook:', { message, sessionId, userId });
     
     const response = await fetch("https://n8nlocal.me/webhook/n8n", {
       method: "POST",
@@ -128,7 +129,8 @@ export const sendToFinbotWebhook = async (userId, conversationId, message) => {
       },
       body: JSON.stringify({ 
         message: message,
-        sessionId: sessionId
+        sessionId: sessionId,
+        userId: userId
       })
     });
 

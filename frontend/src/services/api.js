@@ -82,21 +82,16 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 // --- Finbot Webhook Functions ---
 
 // New centralized helper function for sending messages to Finbot
-export const sendMessageToFinbot = async (userMessage, sessionId) => {
-  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://n8nlocal.me/webhook/n8n';
-  
+export const sendMessageToFinbot = async (userMessage) => {
   try {
-    console.log('Sending message to Finbot webhook:', { userMessage, sessionId });
+    console.log('Sending message to Finbot webhook:', { userMessage });
     
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
+    const response = await fetch("https://n8nlocal.me/webhook/n8n", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        message: userMessage,
-        sessionId: sessionId
-      })
+      body: JSON.stringify({ message: userMessage })
     });
 
     if (!response.ok) {
@@ -112,20 +107,15 @@ export const sendMessageToFinbot = async (userMessage, sessionId) => {
 
 // Legacy function for backward compatibility
 export const sendToFinbotWebhook = async (userId, conversationId, message) => {
-  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://n8nlocal.me/webhook/n8n';
-  
   try {
-    console.log('Sending message to Finbot webhook:', { message, sessionId: conversationId });
+    console.log('Sending message to Finbot webhook:', { message });
     
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
+    const response = await fetch("https://n8nlocal.me/webhook/n8n", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        message: message,
-        sessionId: conversationId
-      })
+      body: JSON.stringify({ message: message })
     });
 
     if (!response.ok) {

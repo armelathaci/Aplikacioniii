@@ -1,0 +1,24 @@
+{
+  "name": "aplikacioniii",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/armelathaci/Aplikacioniii.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/armelathaci/Aplikacioniii/issues"
+  },
+  "homepage": "https://github.com/armelathaci/Aplikacioniii#readme",
+  "description": "",
+  "dependencies": {
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  }
+}

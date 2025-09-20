@@ -35,6 +35,19 @@ const AIChat = ({onNavigate, user }) => {
 
   useEffect(scrollToBottom, [messages]);
 
+  // Helper function to check if message is an error
+  const isErrorMessage = (message) => {
+    if (!message) return true;
+    const errorPatterns = [
+      "I'm sorry, my connection to the AI brain is not configured",
+      "administrator has been notified",
+      "connection to the AI brain is not configured",
+      "AI brain is not configured",
+      "connection to the AI brain"
+    ];
+    return errorPatterns.some(pattern => message.includes(pattern));
+  };
+
   const handleSendMessage = async () => {
     if (!inputValue.trim() || !conversationId) return;
 
@@ -58,11 +71,7 @@ const AIChat = ({onNavigate, user }) => {
         // Kontrollo nëse përgjigja është një mesazh gabimi
         const botMessage = reply.reply || reply.message || "";
         
-        if (botMessage && 
-            !botMessage.includes("I'm sorry, my connection to the AI brain is not configured") && 
-            !botMessage.includes("administrator has been notified") &&
-            !botMessage.includes("connection to the AI brain is not configured")) {
-          
+        if (botMessage && !isErrorMessage(botMessage)) {
           const finbotMessage = {
             id: Date.now(),
             text: botMessage,
@@ -85,19 +94,39 @@ const AIChat = ({onNavigate, user }) => {
         setMessages(prev => [...prev, errorMessage]);
       }
 
-      const data = await sendMessageToAI(conversationId, currentInput);
-      
-      const aiMessage = {
-        id: data.aiResponse.id,
-        text: data.aiResponse.content,
-        sender: 'ai',
-        timestamp: new Date(data.aiResponse.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, aiMessage]);
+      // Send message to backend AI
+      try {
+        const data = await sendMessageToAI(conversationId, currentInput);
+        
+        const aiContent = data.aiResponse.content;
+        
+        // Kontrollo nëse përgjigja është një mesazh gabimi
+        if (aiContent && !isErrorMessage(aiContent)) {
+          const aiMessage = {
+            id: data.aiResponse.id,
+            text: aiContent,
+            sender: 'ai',
+            timestamp: new Date(data.aiResponse.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          setMessages(prev => [...prev, aiMessage]);
+        } else {
+          console.log("Backend AI returned error message, not displaying to user");
+        }
+      } catch (error) {
+        console.error("Backend AI failed:", error);
+        const errorMessage = {
+          id: Date.now() + 1,
+          text: "Për momentin nuk mund të lidhem me asistentin. Provoni më vonë.",
+          sender: 'ai',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      }
 
     } catch (error) {
+      console.error("General error:", error);
       const errorMessage = {
-        id: Date.now() + 1,
+        id: Date.now() + 2,
         text: "Për momentin nuk mund të lidhem me asistentin. Provoni më vonë.",
         sender: 'ai',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })

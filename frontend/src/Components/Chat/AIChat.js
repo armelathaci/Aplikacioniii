@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { FaBars, FaTimes, FaHome, FaExchangeAlt, FaBullseye, FaRobot, FaCog, FaQuestionCircle } from 'react-icons/fa';
 import './AIChat.css';
@@ -282,8 +281,6 @@ const AIChat = ({onNavigate, user }) => {
           
           <div ref={messagesEndRef} />
         </div>
-
-
 
         {/* Input Bar */}
         <div className="input-container">

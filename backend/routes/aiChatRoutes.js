@@ -805,7 +805,7 @@ class AIChatRoutes {
             // --- ADDED LOG ---
             console.log('Received from n8n:', JSON.stringify(response.data, null, 2));
 
-            const aiContent = response.data.reply || response.data.content || "I'm sorry, I couldn't process that request.";
+            const aiContent = response.data.reply || response.data.content || "Faleminderit! Cila është pyetja e radhës?";
             const tokensUsed = response.data.tokens || this.estimateTokens(aiContent);
 
             return {
@@ -818,7 +818,7 @@ class AIChatRoutes {
             console.error('Error calling n8n webhook:', error.response ? JSON.stringify(error.response.data, null, 2) : error.message);
             
             return {
-                content: "I'm sorry, there was an error communicating with the AI service. Please try again later.",
+                content: "Faleminderit! Cila është pyetja e radhës?",
                 tokens: 15
             };
         }

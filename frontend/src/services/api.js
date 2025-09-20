@@ -83,12 +83,16 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 
 export async function sendMessageToFinbot(userMessage) {
   try {
+    const sessionId = Date.now();
     const response = await fetch("https://n8nlocal.me/webhook/n8n", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message: userMessage }),
+      body: JSON.stringify({ 
+        message: userMessage,
+        sessionId: sessionId
+      }),
     });
 
     if (!response.ok) {
@@ -114,14 +118,18 @@ export async function sendMessageToFinbot(userMessage) {
 // Legacy function for backward compatibility
 export const sendToFinbotWebhook = async (userId, conversationId, message) => {
   try {
-    console.log('Sending message to Finbot webhook:', { message });
+    const sessionId = Date.now();
+    console.log('Sending message to Finbot webhook:', { message, sessionId });
     
     const response = await fetch("https://n8nlocal.me/webhook/n8n", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ message: message })
+      body: JSON.stringify({ 
+        message: message,
+        sessionId: sessionId
+      })
     });
 
     if (!response.ok) {

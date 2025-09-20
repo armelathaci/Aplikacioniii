@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+e njejta gje , kjo eshte klasaa ime aichat import React, { useState, useRef, useEffect } from 'react';
 import { FaBars, FaTimes, FaHome, FaExchangeAlt, FaBullseye, FaRobot, FaCog, FaQuestionCircle } from 'react-icons/fa';
 import './AIChat.css';
 import logo from '../../img/logo1.png';
 import { startAIChat, sendMessageToAI, sendMessageToFinbot } from '../../services/api';
 
-const AIChat = ({ onNavigate, user }) => {
+const AIChat = ({onNavigate, user }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -17,15 +17,14 @@ const AIChat = ({ onNavigate, user }) => {
     if (savedCollapsed !== null) setIsCollapsed(savedCollapsed === 'true');
 
     const initializeChat = async () => {
-      try {
-        const data = await startAIChat(`Chat for ${user.email}`);
-        setConversationId(data.conversationId);
-      } catch (error) {
-        console.error("Could not start AI chat session:", error);
-      }
+        try {
+            const data = await startAIChat(`Chat for ${user.email}`);
+            setConversationId(data.conversationId);
+        } catch (error) {
+            console.error("Could not start AI chat session:", error);
+        }
     };
-
-    if (user?.email) initializeChat();
+    if(user?.email) initializeChat();
   }, [user]);
 
   const messagesEndRef = useRef(null);
@@ -35,6 +34,7 @@ const AIChat = ({ onNavigate, user }) => {
   };
 
   useEffect(scrollToBottom, [messages]);
+
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || !conversationId) return;
@@ -52,14 +52,15 @@ const AIChat = ({ onNavigate, user }) => {
     setIsLoading(true);
 
     try {
-      // --- 1. Send message to Finbot webhook ---
+      // Send message to Finbot webhook
       try {
         const reply = await sendMessageToFinbot(currentInput, user?.userId || user?.id);
 
-        const botMessage = reply.message
-          || reply.reply
-          || reply.error
-          || "Nuk mora përgjigje nga serveri.";
+        // Merr mesazhin që ka prioritet
+        const botMessage = reply.message 
+                        || reply.reply 
+                        || reply.error 
+                        || "Nuk mora përgjigje nga serveri.";
 
         const finbotMessage = {
           id: Date.now(),
@@ -68,6 +69,7 @@ const AIChat = ({ onNavigate, user }) => {
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages(prev => [...prev, finbotMessage]);
+
       } catch (error) {
         console.error("Finbot webhook failed:", error);
         const errorMessage = {
@@ -79,29 +81,23 @@ const AIChat = ({ onNavigate, user }) => {
         setMessages(prev => [...prev, errorMessage]);
       }
 
-      // --- 2. Send message to backend AI ---
+      // Send message to backend AI
       try {
         const data = await sendMessageToAI(conversationId, currentInput);
-
-        // Filtro mesazhin e padëshiruar
-        const aiContent = (data.aiResponse &&
-                          data.aiResponse.content &&
-                          !data.aiResponse.content.includes("AI brain is not configured"))
-          ? data.aiResponse.content
-          : "Faleminderit! Cila është pyetja e radhës??";
-
+        
+        const aiContent = data.aiResponse.content || "Nuk mora përgjigje nga serveri.";
+        
         const aiMessage = {
-          id: data.aiResponse?.id || Date.now() + 1,
+          id: data.aiResponse.id,
           text: aiContent,
           sender: 'ai',
-          timestamp: new Date(data.aiResponse?.timestamp || Date.now())
-            .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          timestamp: new Date(data.aiResponse.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages(prev => [...prev, aiMessage]);
       } catch (error) {
         console.error("Backend AI failed:", error);
         const errorMessage = {
-          id: Date.now() + 2,
+          id: Date.now() + 1,
           text: "Për momentin nuk mund të lidhem me asistentin. Provoni më vonë.",
           sender: 'ai',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -112,7 +108,7 @@ const AIChat = ({ onNavigate, user }) => {
     } catch (error) {
       console.error("General error:", error);
       const errorMessage = {
-        id: Date.now() + 3,
+        id: Date.now() + 2,
         text: "Për momentin nuk mund të lidhem me asistentin. Provoni më vonë.",
         sender: 'ai',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -130,9 +126,10 @@ const AIChat = ({ onNavigate, user }) => {
     }
   };
 
+  // --- NEW: A function to handle navigation clicks ---
   const handleNavigation = (page) => {
-    setSidebarOpen(false);
-    onNavigate(page);
+    setSidebarOpen(false); // Close the sidebar
+    onNavigate(page); // Navigate to the new page
   };
 
   const toggleSidebar = () => {
@@ -153,18 +150,17 @@ const AIChat = ({ onNavigate, user }) => {
     },
     ai: {
       fallback: '🤖'
-    },
-    finbot: {
-      fallback: '💬'
     }
   };
 
   return (
     <div className="ai-chat-container">
+      {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div className="sidebar-overlay" onClick={toggleSidebar}></div>
       )}
 
+      {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
           <div className="logo-container">
@@ -177,34 +173,64 @@ const AIChat = ({ onNavigate, user }) => {
         </div>
 
         <nav className="sidebar-nav">
-          <button className="nav-item" onClick={() => handleNavigation('dashboard')} title={isCollapsed ? "Ballina" : ""}>
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('dashboard')}
+            title={isCollapsed ? "Ballina" : ""}
+          >
             <FaHome />
             {!isCollapsed && <span>Ballina</span>}
           </button>
-          <button className="nav-item" onClick={() => handleNavigation('transactions')} title={isCollapsed ? "Transaksionet" : ""}>
+          
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('transactions')}
+            title={isCollapsed ? "Transaksionet" : ""}
+          >
             <FaExchangeAlt />
             {!isCollapsed && <span>Transaksionet</span>}
           </button>
-          <button className="nav-item" onClick={() => handleNavigation('goals')} title={isCollapsed ? "Qëllimet" : ""}>
+          
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('goals')}
+            title={isCollapsed ? "Qëllimet" : ""}
+          >
             <FaBullseye />
             {!isCollapsed && <span>Qëllimet</span>}
           </button>
-          <button className="nav-item active" title={isCollapsed ? "AIChat" : ""}>
+          
+          <button 
+            className="nav-item active" 
+            title={isCollapsed ? "AIChat" : ""}
+          >
             <FaRobot />
             {!isCollapsed && <span>AIChat</span>}
           </button>
-          <button className="nav-item" onClick={() => handleNavigation('settings')} title={isCollapsed ? "Settings" : ""}>
+          
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('settings')}
+            title={isCollapsed ? "Settings" : ""}
+          >
             <FaCog />
             {!isCollapsed && <span>Settings</span>}
           </button>
-          <button className="nav-item" onClick={() => handleNavigation('help')} title={isCollapsed ? "Ndihmë" : ""}>
+          
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('help')}
+            title={isCollapsed ? "Ndihmë" : ""}
+          >
             <FaQuestionCircle />
             {!isCollapsed && <span>Ndihmë</span>}
           </button>
         </nav>
       </div>
 
+      {/* Main Content */}
       <div className="main-content">
+        {/* Header */}
         <div className="chat-header">
           <button className="mobile-menu-btn" onClick={toggleSidebar}>
             <FaBars />
@@ -213,6 +239,7 @@ const AIChat = ({ onNavigate, user }) => {
           <p>Bisedoni me AI-në për pyetje financiare</p>
         </div>
 
+        {/* Chat Messages */}
         <div className="chat-messages">
           {messages.length === 0 && (
             <div className="welcome-message">
@@ -222,33 +249,37 @@ const AIChat = ({ onNavigate, user }) => {
               <p>Shkruani pyetjen tuaj dhe do të merrni përgjigje menjëherë.</p>
             </div>
           )}
-
+          
           {messages.map((message) => (
-            <div key={message.id} className={`message ${message.sender === 'user' ? 'user-message' : 'ai-message'}`}>
+            <div 
+              key={message.id} 
+              className={`message ${message.sender === 'user' ? 'user-message' : 'ai-message'}`}
+            >
               <div className="message-avatar">
                 {message.sender === 'user' ? (
                   <>
-                    <img
+                    <img 
                       src={avatars.user.src}
                       alt={avatars.user.alt}
-                      onError={(e) => { e.target.style.display = 'none'; }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
                     />
                     <span className="avatar-fallback">{avatars.user.fallback}</span>
                   </>
                 ) : (
-                  <span className="avatar-fallback">
-                    {message.sender === 'finbot' ? avatars.finbot.fallback : avatars.ai.fallback}
-                  </span>
+                  <span className="avatar-fallback">{avatars.ai.fallback}</span>
                 )}
               </div>
-
+              
               <div className="message-content">
                 <div className="message-text">{message.text}</div>
                 <div className="message-timestamp">{message.timestamp}</div>
               </div>
             </div>
           ))}
-
+          
+          {/* Loading Animation */}
           {isLoading && (
             <div className="message ai-message">
               <div className="message-avatar">
@@ -257,17 +288,20 @@ const AIChat = ({ onNavigate, user }) => {
               <div className="message-content">
                 <div className="loading-animation">
                   <div className="loading-dots">
-                    <span></span><span></span><span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
                   </div>
                   <span className="loading-text">...</span>
                 </div>
               </div>
             </div>
           )}
-
+          
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Input Bar */}
         <div className="input-container">
           <div className="input-wrapper">
             <textarea
@@ -285,7 +319,7 @@ const AIChat = ({ onNavigate, user }) => {
               disabled={!inputValue.trim() || isLoading}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor" />
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
               </svg>
             </button>
           </div>

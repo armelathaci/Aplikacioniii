@@ -56,9 +56,12 @@ const AIChat = ({onNavigate, user }) => {
       try {
         const reply = await sendMessageToFinbot(currentInput, user?.userId || user?.id);
 
-        // Prioritize reply.message, then reply.reply, then fallback
-        const botMessage = reply.message || reply.reply || "Nuk mora përgjigje nga serveri.";
-        
+        // Merr mesazhin që ka prioritet
+        const botMessage = reply.message 
+                        || reply.reply 
+                        || reply.error 
+                        || "Nuk mora përgjigje nga serveri.";
+
         const finbotMessage = {
           id: Date.now(),
           text: botMessage,
@@ -71,7 +74,7 @@ const AIChat = ({onNavigate, user }) => {
         console.error("Finbot webhook failed:", error);
         const errorMessage = {
           id: Date.now(),
-          text: "Gabim gjatë komunikimit me AI.",
+          text: "Gabim gjatë komunikimit me serverin.",
           sender: 'finbot',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };

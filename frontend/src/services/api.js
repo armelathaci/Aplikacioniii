@@ -83,7 +83,9 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 
 export async function sendMessageToFinbot(userMessage, userId) {
   try {
-    const sessionId = Date.now();
+    const sessionId = "conv-" + Date.now(); // unik për çdo bisedë
+    const timestamp = new Date().toISOString(); // kur u dërgua mesazhi
+
     const response = await fetch("https://n8nlocal.me/webhook/n8n", {
       method: "POST",
       headers: {
@@ -91,8 +93,14 @@ export async function sendMessageToFinbot(userMessage, userId) {
       },
       body: JSON.stringify({ 
         message: userMessage,
+        user_id: userId,
         sessionId: sessionId,
-        userId: userId
+        timestamp: timestamp,
+        lang: "auto",
+        context: {
+          app: "finbot",
+          currency: "USD"
+        }
       }),
     });
 
@@ -100,7 +108,7 @@ export async function sendMessageToFinbot(userMessage, userId) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // Merr tekstin dhe provo ta kthesh në JSON
+    // Lexo përgjigjen si tekst dhe provo ta kthehesh në JSON
     const text = await response.text();
     let data;
     try {
@@ -115,6 +123,7 @@ export async function sendMessageToFinbot(userMessage, userId) {
     throw error;
   }
 }
+
 
 // Legacy function for backward compatibility
 export const sendToFinbotWebhook = async (userId, conversationId, message) => {

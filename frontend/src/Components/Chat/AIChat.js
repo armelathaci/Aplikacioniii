@@ -63,9 +63,10 @@ const AIChat = ({onNavigate, user }) => {
                         || "Nuk mora përgjigje nga serveri.";
         
         // Përkthen mesazhet e gabimit të njohura në anglisht
-        if (botMessage.includes("I'm sorry, my connection to the AI brain is not configured")) {
+        if (botMessage.includes("not configured") || botMessage.includes("AI brain")) {
           botMessage = "Faleminderit! Cila është pyetja e radhës?";
         }
+        
 
         const finbotMessage = {
           id: Date.now(),

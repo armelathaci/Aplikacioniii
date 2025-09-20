@@ -1,0 +1,51 @@
+name: Deploy to ruajmencur.me
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        cd backend
+        npm install
+        
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm install
+        npm run build
+        
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.PORT || 22 }}
+        script: |
+          cd /path/to/your/project
+          git pull origin main
+          npm install
+          pm2 restart all
+          pm2 status
+          
+    - name: Test deployment
+      run: |
+        curl -X POST https://ruajmencur.me/webhook/finbot \
+          -H "Content-Type: application/json" \
+          -d '{"message":"Test deployment","userId":"github-actions","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%S.%3NZ)'"}'

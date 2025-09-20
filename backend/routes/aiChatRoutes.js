@@ -808,7 +808,7 @@ class AIChatRoutes {
             let aiContent = response.data.reply || response.data.content || "Faleminderit! Cila është pyetja e radhës?";
             
             // Përkthen mesazhet e gabimit të njohura në anglisht
-            if (aiContent.includes("I'm sorry, my connection to the AI brain is not configured")) {
+            if (aiContent.includes("Faleminderit! Cila është pyetja e radhës?")) {
                 aiContent = "Faleminderit! Cila është pyetja e radhës?";
             }
             const tokensUsed = response.data.tokens || this.estimateTokens(aiContent);

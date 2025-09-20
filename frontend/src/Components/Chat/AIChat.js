@@ -11,6 +11,9 @@ const AIChat = ({onNavigate, user }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [conversationId, setConversationId] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('connected');
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     const savedCollapsed = localStorage.getItem('sidebarCollapsed');
@@ -35,6 +38,25 @@ const AIChat = ({onNavigate, user }) => {
 
   useEffect(scrollToBottom, [messages]);
 
+  // Save messages to localStorage
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('aiChatMessages', JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Load messages from localStorage on component mount
+  useEffect(() => {
+    const savedMessages = localStorage.getItem('aiChatMessages');
+    if (savedMessages) {
+      try {
+        setMessages(JSON.parse(savedMessages));
+      } catch (error) {
+        console.error('Error loading saved messages:', error);
+      }
+    }
+  }, []);
+
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || !conversationId) return;
@@ -50,6 +72,8 @@ const AIChat = ({onNavigate, user }) => {
     const currentInput = inputValue;
     setInputValue('');
     setIsLoading(true);
+    setIsTyping(true);
+    setConnectionStatus('connecting');
 
     try {
       // Send message to Finbot webhook
@@ -63,7 +87,11 @@ const AIChat = ({onNavigate, user }) => {
                         || "Nuk mora përgjigje nga serveri.";
         
         // Përkthen mesazhet e gabimit të njohura në anglisht
-        if (botMessage.includes("not configured") || botMessage.includes("AI brain")) {
+        if (botMessage.includes("not configured") || 
+            botMessage.includes("AI brain") || 
+            botMessage.includes("administrator has been notified") ||
+            botMessage.includes("connection to the AI") ||
+            botMessage.includes("I'm sorry, my connection")) {
           botMessage = "Faleminderit! Cila është pyetja e radhës?";
         }
         
@@ -78,6 +106,17 @@ const AIChat = ({onNavigate, user }) => {
 
       } catch (error) {
         console.error("Finbot webhook failed:", error);
+        setConnectionStatus('error');
+        
+        // Retry logic
+        if (retryCount < 2) {
+          setTimeout(() => {
+            setRetryCount(prev => prev + 1);
+            handleSendMessage();
+          }, 2000);
+          return;
+        }
+        
         const errorMessage = {
           id: Date.now(),
           text: "Faleminderit! Cila është pyetja e radhës?",
@@ -123,6 +162,9 @@ const AIChat = ({onNavigate, user }) => {
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      setIsTyping(false);
+      setConnectionStatus('connected');
+      setRetryCount(0);
     }
   };
 
@@ -131,6 +173,22 @@ const AIChat = ({onNavigate, user }) => {
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  const clearChat = () => {
+    setMessages([]);
+    setRetryCount(0);
+    setConnectionStatus('connected');
+    localStorage.removeItem('aiChatMessages');
+  };
+
+  const copyMessage = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      // You could add a toast notification here
+      console.log('Message copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy message:', err);
+    });
   };
 
   // --- NEW: A function to handle navigation clicks ---
@@ -242,8 +300,25 @@ const AIChat = ({onNavigate, user }) => {
           <button className="mobile-menu-btn" onClick={toggleSidebar}>
             <FaBars />
           </button>
-          <h1>FinBot</h1>
-          <p>Bisedoni me AI-në për pyetje financiare</p>
+          <div className="header-content">
+            <h1>FinBot</h1>
+            <p>Bisedoni me AI-në për pyetje financiare</p>
+            <div className="header-actions">
+              <div className="connection-status">
+                <div className={`status-indicator ${connectionStatus}`}></div>
+                <span className="status-text">
+                  {connectionStatus === 'connected' && 'I lidhur'}
+                  {connectionStatus === 'connecting' && 'Po lidhem...'}
+                  {connectionStatus === 'error' && 'Gabim në lidhje'}
+                </span>
+              </div>
+              {messages.length > 0 && (
+                <button className="clear-chat-btn" onClick={clearChat} title="Fshi bisedën">
+                  🗑️
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Chat Messages */}
@@ -281,7 +356,16 @@ const AIChat = ({onNavigate, user }) => {
               
               <div className="message-content">
                 <div className="message-text">{message.text}</div>
-                <div className="message-timestamp">{message.timestamp}</div>
+                <div className="message-actions">
+                  <div className="message-timestamp">{message.timestamp}</div>
+                  <button 
+                    className="copy-message-btn" 
+                    onClick={() => copyMessage(message.text)}
+                    title="Kopjo mesazhin"
+                  >
+                    📋
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -299,7 +383,9 @@ const AIChat = ({onNavigate, user }) => {
                     <span></span>
                     <span></span>
                   </div>
-                  <span className="loading-text">...</span>
+                  <span className="loading-text">
+                    {isTyping ? 'Po shkruaj...' : 'Po përgjigjem...'}
+                  </span>
                 </div>
               </div>
             </div>

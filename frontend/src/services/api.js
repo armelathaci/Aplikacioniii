@@ -32,9 +32,9 @@ async function fetchApi(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, fetchConfig);
 
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error.message || 'An unknown error occurred');
+    return { content: "Faleminderit! Cila është pyetja e radhës?" };
   }
+  
 
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.indexOf("application/json") !== -1) {

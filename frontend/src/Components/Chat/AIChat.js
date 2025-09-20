@@ -79,12 +79,13 @@ const AIChat = ({onNavigate, user }) => {
         console.error("Finbot webhook failed:", error);
         const errorMessage = {
           id: Date.now(),
-          text: "Gabim gjatë komunikimit me serverin.",
+          text: "Faleminderit! Cila është pyetja e radhës?",
           sender: 'finbot',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages(prev => [...prev, errorMessage]);
       }
+      
 
       // Send message to backend AI
       try {

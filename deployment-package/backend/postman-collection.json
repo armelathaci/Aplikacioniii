@@ -1,0 +1,567 @@
+{
+  "info": {
+    "name": "Elioti API - Complete",
+    "description": "Complete API collection for Elioti Financial Platform Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "{{base_url}}"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "POST Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"fullName\": \"{{full_name}}\",\n  \"day\": \"{{day}}\",\n  \"month\": \"{{month}}\",\n  \"year\": \"{{year}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    console.log(\"✅ User registered successfully\");",
+                  "    const body = pm.request.body.raw;",
+                  "    const data = JSON.parse(body);",
+                  "    pm.environment.set(\"email\", data.email);",
+                  "} else {",
+                  "    console.log(\"❌ Registration failed\");",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.environment.set(\"auth_token\", response.token);",
+                  "        pm.environment.set(\"user_id\", response.user.id);",
+                  "        console.log(\"✅ Login successful - Token saved\");",
+                  "    }",
+                  "} else {",
+                  "    console.log(\"❌ Login failed\");",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. User Management",
+      "item": [
+        {
+          "name": "GET User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/profile",
+              "host": ["{{base_url}}"],
+              "path": ["user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jobTitle\": \"Software Developer\",\n  \"monthlySalary\": 2500,\n  \"savingsGoalPercentage\": 20\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/profile",
+              "host": ["{{base_url}}"],
+              "path": ["user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "GET User Balance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/balance",
+              "host": ["{{base_url}}"],
+              "path": ["user", "balance"]
+            }
+          }
+        },
+        {
+          "name": "GET User Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/stats",
+              "host": ["{{base_url}}"],
+              "path": ["user", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Transactions",
+      "item": [
+        {
+          "name": "GET Dashboard Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transaction/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["transaction", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "GET All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transaction/list",
+              "host": ["{{base_url}}"],
+              "path": ["transaction", "list"]
+            }
+          }
+        },
+        {
+          "name": "GET Transactions with Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transaction/list?search=ushqim&kategoria=Ushqim&dateFrom=2024-01-01&dateTo=2024-12-31&min=10&max=1000",
+              "host": ["{{base_url}}"],
+              "path": ["transaction", "list"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "ushqim"
+                },
+                {
+                  "key": "kategoria",
+                  "value": "Ushqim"
+                },
+                {
+                  "key": "dateFrom",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "dateTo",
+                  "value": "2024-12-31"
+                },
+                {
+                  "key": "min",
+                  "value": "10"
+                },
+                {
+                  "key": "max",
+                  "value": "1000"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST Create Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 150.50,\n  \"type\": \"expense\",\n  \"category\": \"Ushqim\",\n  \"description\": \"Blerje ushqimi për javën\",\n  \"date\": \"2024-01-15\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transaction/create",
+              "host": ["{{base_url}}"],
+              "path": ["transaction", "create"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Transaction",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 200.00,\n  \"type\": \"expense\",\n  \"category\": \"Transport\",\n  \"description\": \"Benzinë për makinë\",\n  \"date\": \"2024-01-15\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transaction/update/TRANSACTION_ID",
+              "host": ["{{base_url}}"],
+              "path": ["transaction", "update", "TRANSACTION_ID"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Transaction",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transaction/delete/TRANSACTION_ID",
+              "host": ["{{base_url}}"],
+              "path": ["transaction", "delete", "TRANSACTION_ID"]
+            }
+          }
+        },
+        {
+          "name": "GET Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/transaction/alerts",
+              "host": ["{{base_url}}"],
+              "path": ["transaction", "alerts"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Dashboard",
+      "item": [
+        {
+          "name": "GET Home Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/home",
+              "host": ["{{base_url}}"],
+              "path": ["home"]
+            }
+          }
+        },
+        {
+          "name": "GET Dashboard Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Goals (Qellimet)",
+      "item": [
+        {
+          "name": "GET All Goals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/goal",
+              "host": ["{{base_url}}"],
+              "path": ["goal"]
+            }
+          }
+        },
+        {
+          "name": "POST Create Goal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Kursimi për pushime\",\n  \"targetAmount\": 5000,\n  \"currentAmount\": 0,\n  \"deadline\": \"2024-12-31\",\n  \"description\": \"Kursimi për pushimet e verës\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/goal",
+              "host": ["{{base_url}}"],
+              "path": ["goal"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Goal",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Kursimi për pushime\",\n  \"targetAmount\": 6000,\n  \"currentAmount\": 1000,\n  \"deadline\": \"2024-12-31\",\n  \"description\": \"Kursimi për pushimet e verës\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/goal/GOAL_ID",
+              "host": ["{{base_url}}"],
+              "path": ["goal", "GOAL_ID"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Goal",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/goal/GOAL_ID",
+              "host": ["{{base_url}}"],
+              "path": ["goal", "GOAL_ID"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Profile Management",
+      "item": [
+        {
+          "name": "GET Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Test User Updated\",\n  \"phone\": \"+355123456789\",\n  \"address\": \"Tirana, Albania\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Settings",
+      "item": [
+        {
+          "name": "GET Settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/settings",
+              "host": ["{{base_url}}"],
+              "path": ["settings"]
+            }
+          }
+        },
+        {
+          "name": "PUT Update Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notifications\": true,\n  \"language\": \"al\",\n  \"currency\": \"ALL\",\n  \"timezone\": \"Europe/Tirane\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/settings",
+              "host": ["{{base_url}}"],
+              "path": ["settings"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. AI Chat",
+      "item": [
+        {
+          "name": "POST Send Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Si mund të kursem më shumë para?\",\n  \"context\": \"financial_advice\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ai-chat",
+              "host": ["{{base_url}}"],
+              "path": ["ai-chat"]
+            }
+          }
+        },
+        {
+          "name": "GET Chat History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai-chat/history",
+              "host": ["{{base_url}}"],
+              "path": ["ai-chat", "history"]
+            }
+          }
+        },
+        {
+          "name": "POST Clear Chat",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ai-chat/clear",
+              "host": ["{{base_url}}"],
+              "path": ["ai-chat", "clear"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Help & Support",
+      "item": [
+        {
+          "name": "GET Help Articles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/help",
+              "host": ["{{base_url}}"],
+              "path": ["help"]
+            }
+          }
+        },
+        {
+          "name": "POST Contact Support",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Probleme me aplikacionin\",\n  \"message\": \"Kam probleme me regjistrimin e transaksioneve\",\n  \"category\": \"technical_support\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/help/contact",
+              "host": ["{{base_url}}"],
+              "path": ["help", "contact"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

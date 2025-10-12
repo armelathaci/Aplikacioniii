@@ -783,7 +783,7 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
         if (!n8nWebhookUrl) {
             console.error('FATAL ERROR: N8N_WEBHOOK_URL is not defined in the .env file.');
             return {
-                content: "I'm sorry, my connection to the AI brain is not configured. The administrator has been notified.",
+                content: "Faleminderit! Cila është pyetja e radhës?",
                 tokens: 20
             };
         }
@@ -807,7 +807,16 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
             // --- ADDED LOG ---
             console.log('Received from n8n:', JSON.stringify(response.data, null, 2));
 
-            const aiContent = response.data.reply || response.data.content || "I'm sorry, I couldn't process that request.";
+            let aiContent = response.data.reply || response.data.content || "Faleminderit! Cila është pyetja e radhës?";
+            
+            // Përkthen mesazhet e gabimit të njohura në anglisht
+            if (aiContent.includes("not configured") || 
+                aiContent.includes("AI brain") || 
+                aiContent.includes("administrator has been notified") ||
+                aiContent.includes("connection to the AI") ||
+                aiContent.includes("I'm sorry, my connection")) {
+                aiContent = "Faleminderit! Cila është pyetja e radhës?";
+            }
             const tokensUsed = response.data.tokens || this.estimateTokens(aiContent);
 
             return {
@@ -820,7 +829,7 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
             console.error('Error calling n8n webhook:', error.response ? JSON.stringify(error.response.data, null, 2) : error.message);
             
             return {
-                content: "I'm sorry, there was an error communicating with the AI service. Please try again later.",
+                content: "Faleminderit! Cila është pyetja e radhës?",
                 tokens: 15
             };
         }

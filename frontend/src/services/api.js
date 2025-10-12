@@ -32,9 +32,9 @@ async function fetchApi(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, fetchConfig);
 
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error.message || 'An unknown error occurred');
+    return { content: "Faleminderit! Cila është pyetja e radhës?" };
   }
+  
 
   const contentType = response.headers.get("content-type");
   if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -81,22 +81,56 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 
 // --- Finbot Webhook Functions ---
 
-// New centralized helper function for sending messages to Finbot
-export const sendMessageToFinbot = async (userMessage, userId) => {
-  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://ruajmencur.me/webhook/n8n';
-  
+export async function sendMessageToFinbot(userMessage, userId) {
   try {
-    console.log('Sending message to Finbot webhook:', { userMessage, userId });
-    
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
+    const sessionId = Date.now();
+    const response = await fetch("https://n8nlocal.me/webhook/n8n", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
+      body: JSON.stringify({ 
         message: userMessage,
-        userId: userId,
-        timestamp: new Date().toISOString(),
+        sessionId: sessionId,
+        userId: userId
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Merr tekstin dhe provo ta kthesh në JSON
+    const text = await response.text();
+    let data;
+    try {
+      data = text ? JSON.parse(text) : {};  // nëse është bosh, kthe objekt bosh
+    } catch (e) {
+      data = { raw: text }; // nëse nuk është JSON valid, kthe raw tekstin
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error sending message to Finbot webhook:", error);
+    throw error;
+  }
+}
+
+// Legacy function for backward compatibility
+export const sendToFinbotWebhook = async (userId, conversationId, message) => {
+  try {
+    const sessionId = Date.now();
+    console.log('Sending message to Finbot webhook:', { message, sessionId, userId });
+    
+    const response = await fetch("https://n8nlocal.me/webhook/n8n", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ 
+        message: message,
+        sessionId: sessionId,
+        userId: userId
       })
     });
 
@@ -105,67 +139,6 @@ export const sendMessageToFinbot = async (userMessage, userId) => {
     }
 
     return await response.json();
-  } catch (error) {
-    console.error('Error sending message to Finbot webhook:', error);
-    return { error: true, message: error.message };
-  }
-};
-
-// Legacy function for backward compatibility
-export const sendToFinbotWebhook = async (userId, conversationId, message) => {
-  const webhookUrl = process.env.REACT_APP_FINBOT_WEBHOOK || 'https://ruajmencur.me/webhook/n8n';
-  
-  const payload = {
-    message: message,
-    user_id: userId,
-    sessionId: conversationId,
-    timestamp: new Date().toISOString(),
-    lang: "auto",
-    context: {
-      app: "finbot",
-      currency: "EUR"
-    }
-  };
-
-  try {
-    console.log('Sending message to Finbot webhook:', payload);
-    
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    // Check if response has content
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
-      console.warn('Finbot webhook returned non-JSON response');
-      return { reply: 'Webhook response not in JSON format', content: 'Webhook response not in JSON format', tokens: 0 };
-    }
-
-    const responseText = await response.text();
-    if (!responseText.trim()) {
-      console.warn('Finbot webhook returned empty response');
-      return { reply: 'Empty response from webhook', content: 'Empty response from webhook', tokens: 0 };
-    }
-
-    let responseData;
-    try {
-      responseData = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Failed to parse JSON response:', parseError);
-      throw new Error('Invalid JSON response from webhook');
-    }
-
-    console.log('Finbot webhook response:', responseData);
-    
-    return responseData;
   } catch (error) {
     console.error('Error sending message to Finbot webhook:', error);
     throw error;

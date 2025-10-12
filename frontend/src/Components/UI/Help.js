@@ -1,5 +1,5 @@
 // Importimi i librarive të nevojshme nga React
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 // Importimi i ikonave nga react-icons
 import { FaHome, FaExchangeAlt, FaBullseye, FaRobot, FaCog, FaQuestionCircle, FaBars, FaTimes, FaPlus, FaMinus, FaBook, FaShieldAlt, FaEnvelope, FaExclamationTriangle } from 'react-icons/fa';
 import './Help.css';
@@ -12,7 +12,7 @@ export default function Help({ currentPage, onNavigate }) {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  React. useEffect(() => {
+  React.useEffect(() => {
     const savedCollapsed = localStorage.getItem('sidebarCollapsed');
     if (savedCollapsed !== null) setIsCollapsed(savedCollapsed === 'true');
   }, []);

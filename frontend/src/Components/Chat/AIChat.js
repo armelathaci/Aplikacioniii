@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaBars, FaTimes, FaHome, FaExchangeAlt, FaBullseye, FaRobot, FaCog, FaQuestionCircle } from 'react-icons/fa';
 import './AIChat.css';
 import logo from '../../img/logo1.png';
-import { startAIChat, sendMessageToAI, sendToFinbotWebhook } from '../../services/api';
+import { startAIChat, sendMessageToAI, sendMessageToFinbot } from '../../services/api';
 
 const AIChat = ({onNavigate, user }) => {
   const [messages, setMessages] = useState([]);
@@ -60,7 +60,12 @@ const AIChat = ({onNavigate, user }) => {
     try {
       // Send message to Finbot webhook
       try {
-        await sendToFinbotWebhook(user?.userId || user?.id, conversationId, currentInput);
+        const finbotResponse = await sendMessageToFinbot(currentInput, user?.userId || user?.id);
+        if (finbotResponse.error) {
+          console.warn('Finbot webhook failed:', finbotResponse.message);
+        } else {
+          console.log('Finbot webhook success:', finbotResponse);
+        }
       } catch (webhookError) {
         console.warn('Finbot webhook failed, but continuing with AI chat:', webhookError);
         // Continue with normal AI chat even if webhook fails

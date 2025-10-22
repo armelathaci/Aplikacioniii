@@ -45,7 +45,7 @@ class EliotiServer {
             '/settings': settingsRoutes, // <-- RE-ADDED
             '/help': helpRoutes,
             '/ai-chat': aiChatRoutes,
-            '/dashboard': dashboardRoutes,
+            '/dashboard': dashboardRoutes
             //'/webhook': webhookRoutes
         };
         

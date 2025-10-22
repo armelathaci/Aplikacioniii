@@ -46,7 +46,7 @@ class EliotiServer {
             '/help': helpRoutes,
             '/ai-chat': aiChatRoutes,
             '/dashboard': dashboardRoutes,
-            '/webhook': webhookRoutes
+            //'/webhook': webhookRoutes
         };
         
         this.server = null;

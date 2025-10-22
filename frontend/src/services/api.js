@@ -1,6 +1,6 @@
 // frontend/src/services/api.js
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API_URL = "https://ruajmencur-backend-1ea392794ebf.herokuapp.com";
 
 // A helper function to manage all API requests
 async function fetchApi(path, options = {}) {
@@ -29,10 +29,10 @@ async function fetchApi(path, options = {}) {
 
   fetchConfig.headers = finalHeaders;
 
-  const response = await fetch(`${API_URL}${path.startsWith('/') ? path : '/' + path}`, fetchConfig);
+  const response = await fetch(`${API_URL}${path}`, fetchConfig);
 
   if (!response.ok) {
-    return { content: "Faleminderit! Cila është pyetja e radhës?" };
+    throw new Error(`HTTP error! status: ${response.status}`);
   }
   
 

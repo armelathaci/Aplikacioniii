@@ -29,7 +29,7 @@ async function fetchApi(path, options = {}) {
 
   fetchConfig.headers = finalHeaders;
 
-  const response = await fetch(`${API_URL}${path}`, fetchConfig);
+  const response = await fetch(`${API_URL}${path.startsWith('/') ? path : '/' + path}`, fetchConfig);
 
   if (!response.ok) {
     return { content: "Faleminderit! Cila është pyetja e radhës?" };

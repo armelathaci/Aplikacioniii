@@ -89,7 +89,7 @@ export default function HomeDashboard({
     onNavigate(page); // Navigate to the new page
   };
 
-  const dynamicCategories = Object.entries(dashboardData.spendingByCategory).map(([name, value], index) => {
+  const dynamicCategories = Object.entries(dashboardData.spendingByCategory || {}).map(([name, value], index) => {
     const colors = ['#00b894', '#0984e3', '#e17055', '#6c5ce7', '#fdcb6e', '#636e72'];
     return { name, value, color: colors[index % colors.length] };
   });

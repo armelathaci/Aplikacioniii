@@ -23,7 +23,7 @@ const settingsRoutes = require('./routes/settingsRoutes');
 const helpRoutes = require('./routes/helpRoutes');
 const aiChatRoutes = require('./routes/aiChatRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-const webhookRoutes = require('./routes/webhookRoutes');// profileRoutes is the only one that can be removed as its logic is fully in userRoutes
+//const webhookRoutes = require('./routes/webhookRoutes');// profileRoutes is the only one that can be removed as its logic is fully in userRoutes
 // const profileRoutes = require('./routes/profileRoutes'); // REMOVED
 
 
@@ -45,8 +45,8 @@ class EliotiServer {
             '/settings': settingsRoutes, // <-- RE-ADDED
             '/help': helpRoutes,
             '/ai-chat': aiChatRoutes,
-            '/dashboard': dashboardRoutes,
-            '/webhook': webhookRoutes
+            '/dashboard': dashboardRoutes
+            //'/webhook': webhookRoutes
         };
         
         this.server = null;
@@ -57,7 +57,7 @@ class EliotiServer {
             config.validate();
             await this.databaseManager.connect();
             this.server = http.createServer(this.handleRequest.bind(this));
-            this.server.listen(config.server.port,  '0.0.0.0', () => {
+            this.server.listen(config.server.port, '0.0.0.0', () => {
                 console.log(`🚀 Elioti server running on ${config.server.host}:${config.server.port}`);
                 console.log(`🔧 Environment: ${config.server.environment}`);
             });

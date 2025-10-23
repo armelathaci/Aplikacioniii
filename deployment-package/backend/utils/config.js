@@ -94,7 +94,11 @@ const config = {
     port: process.env.DB_PORT,
     name: process.env.DB_NAME,
     user: process.env.DB_USER, 
-    password: process.env.DB_PASSWORD
+    password: process.env.DB_PASSWORD,
+    ssl: {
+        rejectUnauthorized: true 
+      }
+    
 
     },
 
@@ -108,7 +112,7 @@ const config = {
 
     // Konfigurimi i CORS
     cors: {
-        origin: process.env.CORS_ORIGIN || '*',
+        origin: process.env.CORS_ORIGIN || 'https://ruajmencur.me',
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization', 'x-session-id']
     }

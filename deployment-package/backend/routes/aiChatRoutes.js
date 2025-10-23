@@ -3,60 +3,62 @@
 const Validators = require('../utils/validators');
 const ErrorHandler = require('../middleware/errorHandler');
 const axios = require('axios'); 
+const BaseRoutes = require('./BaseRoutes'); 
 
-class AIChatRoutes {
+class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
     constructor() {
-        this.conversationHistory = new Map(); // In-memory storage for conversation history
-        this.userSessions = new Map(); // Track user chat sessions
+        super();
+        this.conversationHistory = new Map();
+        this.userSessions = new Map();
     }
 
     async handle(req, res, context) {
         const { authMiddleware, parsedUrl } = context;
-
-        // All AI chat routes require authentication
+    
         authMiddleware.requireAuth(req, res, async () => {
             const pathname = parsedUrl.pathname;
             const method = req.method.toUpperCase();
-
-            // AI Chat routing logic
-            if (pathname === '/ai-chat/start' && method === 'POST') {
-                return await this.startChat(req, res, context);
-            }
-            if (pathname === '/ai-chat/message' && method === 'POST') {
-                return await this.sendMessage(req, res, context);
-            }
-            if (pathname === '/ai-chat/conversation' && method === 'GET') {
-                return await this.getConversation(req, res, context);
-            }
-            if (pathname === '/ai-chat/conversations' && method === 'GET') {
-                return await this.getConversations(req, res, context);
-            }
-            if (pathname === '/ai-chat/clear' && method === 'POST') {
-                return await this.clearConversation(req, res, context);
-            }
-            if (pathname === '/ai-chat/export' && method === 'POST') {
-                return await this.exportConversation(req, res, context);
-            }
-            if (pathname === '/ai-chat/settings' && method === 'GET') {
-                return await this.getChatSettings(req, res, context);
-            }
-            if (pathname === '/ai-chat/settings' && method === 'PUT') {
-                return await this.updateChatSettings(req, res, context);
-            }
-            if (pathname === '/ai-chat/feedback' && method === 'POST') {
-                return await this.submitChatFeedback(req, res, context);
-            }
-            if (pathname === '/ai-chat/context' && method === 'POST') {
-                return await this.setContext(req, res, context);
-            }
-            if (pathname === '/ai-chat/suggestions' && method === 'GET') {
-                return await this.getSuggestions(req, res, context);
-            }
-            if (pathname === '/ai-chat/stream' && method === 'POST') {
-                return await this.streamMessage(req, res, context);
+    
+            // --- THIS IS THE CORRECTED ROUTING LOGIC ---
+            switch (pathname) {
+                case '/ai-chat/start':
+                    if (method === 'POST') return await this.startChat(req, res, context);
+                    break;
+                case '/ai-chat/message':
+                    if (method === 'POST') return await this.sendMessage(req, res, context);
+                    break;
+                case '/ai-chat/conversation':
+                    if (method === 'GET') return await this.getConversation(req, res, context);
+                    break;
+                case '/ai-chat/conversations':
+                    if (method === 'GET') return await this.getConversations(req, res, context);
+                    break;
+                case '/ai-chat/clear':
+                    if (method === 'POST') return await this.clearConversation(req, res, context);
+                    break;
+                case '/ai-chat/export':
+                    if (method === 'POST') return await this.exportConversation(req, res, context);
+                    break;
+                case '/ai-chat/settings':
+                    if (method === 'GET') return await this.getChatSettings(req, res, context);
+                    if (method === 'PUT') return await this.updateChatSettings(req, res, context);
+                    break;
+                case '/ai-chat/feedback':
+                    if (method === 'POST') return await this.submitChatFeedback(req, res, context);
+                    break;
+                case '/ai-chat/context':
+                    if (method === 'POST') return await this.setContext(req, res, context);
+                    break;
+                case '/ai-chat/suggestions':
+                    if (method === 'GET') return await this.getSuggestions(req, res, context);
+                    break;
+                case '/ai-chat/stream':
+                    if (method === 'POST') return await this.streamMessage(req, res, context);
+                    break;
             }
             
-            this.sendError(res, 404, 'AI Chat endpoint not found');
+            // If no case above matched and returned, it means the method was wrong or the path was not found.
+            return this.sendError(res, 405, `Method ${method} not allowed for ${pathname}`);
         });
     }
 
@@ -808,7 +810,11 @@ class AIChatRoutes {
             let aiContent = response.data.reply || response.data.content || "Faleminderit! Cila është pyetja e radhës?";
             
             // Përkthen mesazhet e gabimit të njohura në anglisht
-            if (aiContent.includes("Faleminderit! Cila është pyetja e radhës?")) {
+            if (aiContent.includes("not configured") || 
+                aiContent.includes("AI brain") || 
+                aiContent.includes("administrator has been notified") ||
+                aiContent.includes("connection to the AI") ||
+                aiContent.includes("I'm sorry, my connection")) {
                 aiContent = "Faleminderit! Cila është pyetja e radhës?";
             }
             const tokensUsed = response.data.tokens || this.estimateTokens(aiContent);

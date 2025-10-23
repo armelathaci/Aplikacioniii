@@ -1,6 +1,6 @@
 // frontend/src/services/api.js
 
-const API_URL = "https://ruajmencur-backend-1ea392794ebf.herokuapp.com";
+const API_URL = "http://localhost:3000";
 
 // A helper function to manage all API requests
 async function fetchApi(path, options = {}) {
@@ -29,7 +29,7 @@ async function fetchApi(path, options = {}) {
 
   fetchConfig.headers = finalHeaders;
 
-  const response = await fetch(`${API_URL}${path}`, fetchConfig);
+  const response = await fetch(new URL(path, API_URL), fetchConfig);
 
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);

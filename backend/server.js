@@ -57,7 +57,7 @@ class EliotiServer {
             config.validate();
             await this.databaseManager.connect();
             this.server = http.createServer(this.handleRequest.bind(this));
-            this.server.listen(config.server.port, 'localhost', () => {
+            this.server.listen(config.server.port, '0.0.0.0', () => {
                 console.log(`🚀 Elioti server running on ${config.server.host}:${config.server.port}`);
                 console.log(`🔧 Environment: ${config.server.environment}`);
             });

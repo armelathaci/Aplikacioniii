@@ -35,8 +35,13 @@ async function fetchApi(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, fetchConfig);
 
   if (!response.ok) {
-    return { content: "Faleminderit! Cila është pyetja e radhës?" };
+    const errorText = await response.text();
+    throw new Error(`Request failed with status ${response.status}: ${errorText}`);
   }
+
+  /*if (!response.ok) {
+    return { content: "Faleminderit! Cila është pyetja e radhës?" };
+  }*/
   
 
   const contentType = response.headers.get("content-type");
@@ -48,30 +53,30 @@ async function fetchApi(path, options = {}) {
 }
 
 // --- Authentication Functions ---
-export const login = (email, password) => fetchApi('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
-export const register = (userData) => fetchApi('/auth/register', { method: 'POST', body: JSON.stringify(userData) });
-export const forgotPassword = (email) => fetchApi('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
-export const resetPassword = (data) => fetchApi('/auth/reset-password', { method: 'POST', body: JSON.stringify(data) });
+export const login = (email, password) => fetchApi('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+export const register = (userData) => fetchApi('/api/auth/register', { method: 'POST', body: JSON.stringify(userData) });
+export const forgotPassword = (email) => fetchApi('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
+export const resetPassword = (data) => fetchApi('/api/auth/reset-password', { method: 'POST', body: JSON.stringify(data) });
 
 // --- Dashboard Functions ---
-export const getHomeDashboardData = () => fetchApi('/dashboard/home');
+export const getHomeDashboardData = () => fetchApi('/api/dashboard/home'); // /dashboard/home
 
 // --- Transactions Functions ---
-export const getTransactions = (filters = {}) => fetchApi('/transaction/list');
-export const createTransaction = (transactionData) => fetchApi('/transaction/create', { method: 'POST', body: JSON.stringify(transactionData) });
-export const updateTransaction = (transactionId, transactionData) => fetchApi(`/transaction/update/${transactionId}`, { method: 'PUT', body: JSON.stringify(transactionData) });
-export const deleteTransaction = (transactionId) => fetchApi(`/transaction/delete/${transactionId}`, { method: 'DELETE' });
+export const getTransactions = (filters = {}) => fetchApi('/api/transaction/list');
+export const createTransaction = (transactionData) => fetchApi('/api/transaction/create', { method: 'POST', body: JSON.stringify(transactionData) });
+export const updateTransaction = (transactionId, transactionData) => fetchApi(`/api/transaction/update/${transactionId}`, { method: 'PUT', body: JSON.stringify(transactionData) });
+export const deleteTransaction = (transactionId) => fetchApi(`/api/transaction/delete/${transactionId}`, { method: 'DELETE' });
 
 // --- Goals Functions ---
-export const getGoals = () => fetchApi('/goal/list');
-export const createGoal = (goalData) => fetchApi('/goal/create', { method: 'POST', body: JSON.stringify(goalData) });
-export const updateGoal = (goalId, goalData) => fetchApi(`/goal/update/${goalId}`, { method: 'PUT', body: JSON.stringify(goalData) });
-export const deleteGoal = (goalId) => fetchApi(`/goal/delete/${goalId}`, { method: 'DELETE' });
+export const getGoals = () => fetchApi('/api/goal/list');
+export const createGoal = (goalData) => fetchApi('/api/goal/create', { method: 'POST', body: JSON.stringify(goalData) });
+export const updateGoal = (goalId, goalData) => fetchApi(`/api/goal/update/${goalId}`, { method: 'PUT', body: JSON.stringify(goalData) });
+export const deleteGoal = (goalId) => fetchApi(`/api/goal/delete/${goalId}`, { method: 'DELETE' });
 
 // --- Settings / User Profile Functions ---
-export const getProfile = () => fetchApi('/user/profile');
-export const updateProfile = (profileData) => fetchApi('/user/profile', { method: 'PUT', body: JSON.stringify(profileData) });
-export const changePassword = (passwordData) => fetchApi('/user/password', { method: 'POST', body: JSON.stringify(passwordData) });
+export const getProfile = () => fetchApi('/api/user/profile');
+export const updateProfile = (profileData) => fetchApi('/api/user/profile', { method: 'PUT', body: JSON.stringify(profileData) });
+export const changePassword = (passwordData) => fetchApi('/api/user/password', { method: 'POST', body: JSON.stringify(passwordData) });
 export const deleteAccount = () => fetchApi('/settings/delete-account', { method: 'DELETE' });
 
 // --- Original Settings API Calls ---

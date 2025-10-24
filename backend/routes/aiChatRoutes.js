@@ -791,11 +791,11 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
         try {
             const requestBody = {
                 model: model,
-                message: history.messages[history.messages.length - 1]?.content || '', // Vetëm mesazhi i fundit
+                message: history.messages.at(-1), // ✅ sends only the latest message
                 context: history.context || '',
                 userId: user.userId,
                 token: user.token
-            };
+              };
 
             // --- ADDED LOG ---
             console.log('Sending to n8n:', JSON.stringify(requestBody, null, 2));

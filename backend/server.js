@@ -48,6 +48,8 @@ class EliotiServer {
             '/dashboard': dashboardRoutes
             //'/webhook': webhookRoutes
         };
+
+        
         
         this.server = null;
     }

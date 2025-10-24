@@ -1,6 +1,9 @@
 // frontend/src/services/api.js
 
-const API_URL = "http://localhost:3000";
+// const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
+const rawApiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
 // A helper function to manage all API requests
 async function fetchApi(path, options = {}) {
@@ -32,8 +35,13 @@ async function fetchApi(path, options = {}) {
   const response = await fetch(new URL(path, API_URL), fetchConfig);
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorText = await response.text();
+    throw new Error(`Request failed with status ${response.status}: ${errorText}`);
   }
+
+  /*if (!response.ok) {
+    return { content: "Faleminderit! Cila është pyetja e radhës?" };
+  }*/
   
 
   const contentType = response.headers.get("content-type");
@@ -51,7 +59,7 @@ export const forgotPassword = (email) => fetchApi('/auth/forgot-password', { met
 export const resetPassword = (data) => fetchApi('/auth/reset-password', { method: 'POST', body: JSON.stringify(data) });
 
 // --- Dashboard Functions ---
-export const getHomeDashboardData = () => fetchApi('/dashboard/home');
+export const getHomeDashboardData = () => fetchApi('/dashboard/home'); // /dashboard/home
 
 // --- Transactions Functions ---
 export const getTransactions = (filters = {}) => fetchApi('/transaction/list');
@@ -60,7 +68,7 @@ export const updateTransaction = (transactionId, transactionData) => fetchApi(`/
 export const deleteTransaction = (transactionId) => fetchApi(`/transaction/delete/${transactionId}`, { method: 'DELETE' });
 
 // --- Goals Functions ---
-export const getGoals = () => fetchApi('/goal/list');
+export const getGoals = () => fetchApi('/goal/list'); 
 export const createGoal = (goalData) => fetchApi('/goal/create', { method: 'POST', body: JSON.stringify(goalData) });
 export const updateGoal = (goalId, goalData) => fetchApi(`/goal/update/${goalId}`, { method: 'PUT', body: JSON.stringify(goalData) });
 export const deleteGoal = (goalId) => fetchApi(`/goal/delete/${goalId}`, { method: 'DELETE' });

@@ -1,18 +1,23 @@
-// ✅ Corrected Full Version of HomeDashboard.js
+// frontend/src/Components/Dashboard/HomeDashboard.js
 
+// Importimi i librarive të nevojshme nga React
 import React, { useState, useEffect } from 'react';
-import { 
-  FaWallet, FaArrowUp, FaArrowDown, FaPlus, FaTimes, FaHome, 
-  FaExchangeAlt, FaBullseye, FaRobot, FaCog, FaQuestionCircle 
-} from 'react-icons/fa';
+// Importimi i ikonave nga react-icons për të përdorur në aplikacion
+import { FaWallet, FaArrowUp, FaArrowDown, FaPlus, FaTimes, FaHome, FaExchangeAlt, FaBullseye, FaRobot, FaCog, FaQuestionCircle } from 'react-icons/fa';
 import './HomeDashboard.css';
 import logo from '../../img/logo1.png';
-import { getHomeDashboardData, createTransaction } from '../../services/api';
+import { getHomeDashboardData, createTransaction } from '../../services/api'; // Import createTransaction
 
-export default function HomeDashboard({ onNavigate, loggedInUser }) {
+// Komponenti kryesor i Dashboard-it të shtëpisë
+export default function HomeDashboard({ 
+  onNavigate,
+  loggedInUser
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showIncomeModal, setShowIncomeModal] = useState(false);
+
+  // --- State to hold LIVE data from the backend ---
   const [dashboardData, setDashboardData] = useState({
     balance: 0,
     monthlyIncome: 0,
@@ -23,13 +28,14 @@ export default function HomeDashboard({ onNavigate, loggedInUser }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // --- State for the "Add Income" form ---
   const [incomeForm, setIncomeForm] = useState({
     name: '',
     amount: '',
     category: 'Të ardhura',
     type: 'income',
     date: new Date().toISOString().split('T')[0],
-    description: ''
+    description: '' // Optional, can be the same as name
   });
 
   const fetchDashboardData = async () => {
@@ -52,49 +58,47 @@ export default function HomeDashboard({ onNavigate, loggedInUser }) {
     fetchDashboardData();
   }, []);
 
+ 
+  // --- Function to handle submitting the income form ---
   const handleIncomeSubmit = async (e) => {
     e.preventDefault();
     if (!incomeForm.amount || !incomeForm.name) {
-      alert("Ju lutem plotësoni emrin dhe shumën.");
-      return;
+        alert("Ju lutem plotësoni emrin dhe shumën.");
+        return;
     }
     try {
-      await createTransaction({
-        name: incomeForm.name,
-        amount: incomeForm.amount,
-        category: incomeForm.category,
-        type: incomeForm.type,
-        date: incomeForm.date,
-        description: incomeForm.description || incomeForm.name
-      });
-      setShowIncomeModal(false);
-      setIncomeForm({ name: '', amount: '', category: 'Të ardhura', type: 'income', date: new Date().toISOString().split('T')[0], description: '' });
-      fetchDashboardData();
+        await createTransaction({
+            name: incomeForm.name,
+            amount: incomeForm.amount,
+            category: incomeForm.category,
+            type: incomeForm.type,
+            date: incomeForm.date,
+            description: incomeForm.description || incomeForm.name
+        });
+        setShowIncomeModal(false);
+        setIncomeForm({ name: '', amount: '', category: 'Të ardhura', type: 'income', date: new Date().toISOString().split('T')[0], description: '' });
+        fetchDashboardData(); // Refresh the dashboard data
     } catch (err) {
-      alert(`Gabim: ${err.message}`);
+        alert(`Gabim: ${err.message}`);
     }
   };
 
+  // This function will first close the sidebar (on mobile) and then navigate.
   const handleNavigation = (page) => {
-    setSidebarOpen(false);
-    onNavigate(page);
+    setSidebarOpen(false); // Close the sidebar
+    onNavigate(page); // Navigate to the new page
   };
 
-
-  // const dynamicCategories = Object.entries(dashboardData.spendingByCategory).map(([name, value], index) => {
-
-  
-  const dynamicCategories = Object.entries(dashboardData.spendingByCategory || {}).map(([name, value], index) => {
+  const dynamicCategories = Object.entries(dashboardData.spendingByCategory).map(([name, value], index) => {
     const colors = ['#00b894', '#0984e3', '#e17055', '#6c5ce7', '#fdcb6e', '#636e72'];
     return { name, value, color: colors[index % colors.length] };
   });
-  
   const dynamicTotal = dynamicCategories.reduce((sum, c) => sum + c.value, 0);
 
   if (isLoading) {
     return <div style={{ color: 'white', textAlign: 'center', paddingTop: '50px', fontSize: '1.5rem' }}>Duke ngarkuar Panelin...</div>;
   }
-
+  
   if (error) {
     return <div style={{ color: '#ff6b6b', textAlign: 'center', paddingTop: '50px', fontSize: '1.5rem' }}>{error}</div>;
   }
@@ -133,7 +137,7 @@ export default function HomeDashboard({ onNavigate, loggedInUser }) {
               </button>
             </div>
           </div>
-
+          
           <div className="main-balance-section">
             <div className="balance-card">
               <FaWallet className="balance-icon" />
@@ -196,7 +200,8 @@ export default function HomeDashboard({ onNavigate, loggedInUser }) {
         </div>
       </main>
 
-      {/* --- Modal for adding income --- */}
+      
+      {/* --- THIS IS THE MISSING MODAL CODE --- */}
       {showIncomeModal && (
         <div className="modal-bg">
           <div className="modal-content">

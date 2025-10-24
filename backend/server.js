@@ -37,7 +37,7 @@ class EliotiServer {
         this.rateLimiter = new RateLimiter();
         
         // Final, correct route mapping
-        /*this.routes = {
+        this.routes = {
             '/auth': authRoutes,
             '/user': userRoutes,
             '/transaction': transactionRoutes,
@@ -47,19 +47,9 @@ class EliotiServer {
             '/ai-chat': aiChatRoutes,
             '/dashboard': dashboardRoutes
             //'/webhook': webhookRoutes
-        };*/
+        };
 
-        // server.js
-    this.routes = {
-    '/api/auth': authRoutes,
-    '/api/user': userRoutes,
-    '/api/transaction': transactionRoutes,
-    '/api/goal': goalRoutes,
-    '/api/settings': settingsRoutes,
-    '/api/help': helpRoutes,
-    '/api/ai-chat': aiChatRoutes,
-    '/api/dashboard': dashboardRoutes
-    };
+        
         
         this.server = null;
     }

@@ -791,10 +791,10 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
         try {
             const requestBody = {
                 model: model,
-                messages: history.messages,
+                message: history.messages[history.messages.length - 1]?.content || '', // Vetëm mesazhi i fundit
                 context: history.context || '',
-                userId: user.userId, // Add the userId
-                token: user.token      // Add the auth token
+                userId: user.userId,
+                token: user.token
             };
 
             // --- ADDED LOG ---

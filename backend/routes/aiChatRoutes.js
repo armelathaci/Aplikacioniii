@@ -170,14 +170,7 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
             const timestamp = new Date();
             
             // Add user message to history
-            const userMessage = {
-                id: messageId,
-                role: 'user',
-                content: message,
-                type: messageType,
-                timestamp: timestamp,
-                tokens: this.estimateTokens(message)
-            };
+            const userMessage = this.createUserMessage(message, messageType);
             
             history.messages.push(userMessage);
             history.lastActivity = timestamp;
@@ -192,7 +185,7 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
             
             // --- THIS IS THE FIX ---
             // Pass the entire request object's user property to the function
-            const aiResponse = await this.generateAIResponse(history, conversation.model, req.user);
+            const aiResponse = await this.generateAIResponse(history, conversation.model, req.user,userMessage);
             
             // Add AI response to history
             const aiMessageId = Validators.generateSecureId();
@@ -745,9 +738,10 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
             
             // Send initial response
             res.write('data: {"status": "processing"}\n\n');
-            
+            const userMessage = this.createUserMessage(message);
             // Simulate streaming AI response (in production, this would connect to actual AI service)
-            const aiResponse = await this.generateAIResponse({ messages: [] }, conversation.model);
+            const aiResponse = await this.generateAIResponse({ messages: [] }, conversation.model,req.user,userMessage);
+            // Create userMessage for streaming
             
             // Stream the response word by word
             const words = aiResponse.content.split(' ');
@@ -775,9 +769,20 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
     }
 
     // --- HELPER FUNCTIONS ---
+    // Helper method to create user message object
+createUserMessage(message, messageType = 'text') {
+    return {
+        id: Validators.generateSecureId(),
+        role: 'user',
+        content: message,
+        type: messageType,
+        timestamp: new Date(),
+        tokens: this.estimateTokens(message)
+    };
+}
 
     // --- MODIFIED FUNCTION WITH DEBUGGING LOGS ---
-    async generateAIResponse(history, model, user) {
+    async generateAIResponse(history, model, user,userMessage) {
         const n8nWebhookUrl = process.env.N8N_WEBHOOK_URL;
 
         if (!n8nWebhookUrl) {
@@ -791,7 +796,7 @@ class AIChatRoutes extends BaseRoutes { // Make sure to extend BaseRoutes
         try {
             const requestBody = {
                 model: model,
-                message: history.messages.at(-1), // ✅ sends only the latest message
+                message: userMessage, 
                 context: history.context || '',
                 userId: user.userId,
                 token: user.token

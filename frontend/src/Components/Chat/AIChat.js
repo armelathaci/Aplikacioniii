@@ -127,21 +127,21 @@ const AIChat = ({onNavigate, user }) => {
       }
       
 
-      // Send message to backend AI
+      // Send message directly to n8n webhook
       try {
-        const data = await sendMessageToAI(conversationId, currentInput);
+        const data = await sendMessageToFinbot(currentInput, user.userId);
         
-        const aiContent = data.aiResponse.content || "Nuk mora përgjigje nga serveri.";
+        const aiContent = data.reply || data.content || data.raw || "Nuk mora përgjigje nga n8n.";
         
         const aiMessage = {
-          id: data.aiResponse.id,
+          id: Date.now(),
           text: aiContent,
           sender: 'ai',
-          timestamp: new Date(data.aiResponse.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages(prev => [...prev, aiMessage]);
       } catch (error) {
-        console.error("Backend AI failed:", error);
+        console.error("n8n webhook failed:", error);
         const errorMessage = {
           id: Date.now() + 1,
           text: "Për momentin nuk mund të lidhem me asistentin. Provoni më vonë.",

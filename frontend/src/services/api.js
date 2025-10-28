@@ -92,6 +92,11 @@ export const sendMessageToAI = (conversationId, message) => fetchApi('/ai-chat/m
 export async function sendMessageToFinbot(userMessage, userId) {
   try {
     const sessionId = Date.now();
+    
+    // Shto timeout prej 5 sekondash
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
     const response = await fetch("https://n8nlocal.me/webhook/n8n", {
       method: "POST",
       headers: {
@@ -102,7 +107,10 @@ export async function sendMessageToFinbot(userMessage, userId) {
         sessionId: sessionId,
         userId: userId
       }),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

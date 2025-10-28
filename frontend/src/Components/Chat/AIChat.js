@@ -76,57 +76,6 @@ const AIChat = ({onNavigate, user }) => {
     setConnectionStatus('connecting');
 
     try {
-      // Send message to Finbot webhook
-      try {
-        const reply = await sendMessageToFinbot(currentInput, user?.userId || user?.id);
-
-        // Merr mesazhin që ka prioritet dhe përkthen mesazhet e gabimit në anglisht
-        let botMessage = reply.message 
-                        || reply.reply 
-                        || reply.error 
-                        || "Nuk mora përgjigje nga serveri.";
-        
-        // Përkthen mesazhet e gabimit të njohura në anglisht
-        if (botMessage.includes("not configured") || 
-            botMessage.includes("AI brain") || 
-            botMessage.includes("administrator has been notified") ||
-            botMessage.includes("connection to the AI") ||
-            botMessage.includes("I'm sorry, my connection")) {
-          botMessage = "Faleminderit! Cila është pyetja e radhës?";
-        }
-        
-
-        const finbotMessage = {
-          id: Date.now(),
-          text: botMessage,
-          sender: 'finbot',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-        setMessages(prev => [...prev, finbotMessage]);
-
-      } catch (error) {
-        console.error("Finbot webhook failed:", error);
-        setConnectionStatus('error');
-        
-        // Retry logic
-        if (retryCount < 2) {
-          setTimeout(() => {
-            setRetryCount(prev => prev + 1);
-            handleSendMessage();
-          }, 2000);
-          return;
-        }
-        
-        const errorMessage = {
-          id: Date.now(),
-          text: "Faleminderit! Cila është pyetja e radhës?",
-          sender: 'finbot',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-        setMessages(prev => [...prev, errorMessage]);
-      }
-      
-
       // Send message directly to n8n webhook
       try {
         const data = await sendMessageToFinbot(currentInput, user.userId);
@@ -142,6 +91,17 @@ const AIChat = ({onNavigate, user }) => {
         setMessages(prev => [...prev, aiMessage]);
       } catch (error) {
         console.error("n8n webhook failed:", error);
+        setConnectionStatus('error');
+        
+        // Retry logic
+        if (retryCount < 2) {
+          setTimeout(() => {
+            setRetryCount(prev => prev + 1);
+            handleSendMessage();
+          }, 2000);
+          return;
+        }
+        
         const errorMessage = {
           id: Date.now() + 1,
           text: "Për momentin nuk mund të lidhem me asistentin. Provoni më vonë.",

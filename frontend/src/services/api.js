@@ -93,9 +93,9 @@ export async function sendMessageToFinbot(userMessage, userId) {
   try {
     const sessionId = Date.now();
     
-    // Shto timeout prej 15 sekondash
+    // Shto timeout prej 30 sekondash
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
     
     const response = await fetch("https://n8nlocal.me/webhook/n8n", {
       method: "POST",
@@ -128,7 +128,7 @@ export async function sendMessageToFinbot(userMessage, userId) {
     return data;
   } catch (error) {
     if (error.name === 'AbortError') {
-      console.error("Request timed out - n8n webhook is not responding within 15 seconds");
+      console.error("Request timed out - n8n webhook is not responding within 30 seconds");
       throw new Error('Request timed out - n8n webhook is not responding');
     }
     console.error("Error sending message to Finbot webhook:", error);

@@ -796,8 +796,8 @@ createUserMessage(message, messageType = 'text') {
         try {
             const requestBody = {
                 model: model,
-                message: userMessage, 
-                context: history.context || '',
+                message: userMessage,
+             //   context: history.context || '',
                 userId: user.userId,
                 token: user.token
               };

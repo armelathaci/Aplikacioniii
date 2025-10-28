@@ -78,7 +78,7 @@ const AIChat = ({onNavigate, user }) => {
     try {
       // Send message directly to n8n webhook
       try {
-        const data = await sendMessageToFinbot(currentInput, user.useId);
+        const data = await sendMessageToFinbot(currentInput, user.userId || user.id);
         
         const aiContent = data.reply || data.content || data.raw || "Nuk mora përgjigje nga n8n.";
         
@@ -169,7 +169,7 @@ const AIChat = ({onNavigate, user }) => {
 
   const avatars = {
     user: {
-      src: '/img/user.icon.png',
+      src: require('../../img/user.icon.png'),
       alt: 'User Avatar',
       fallback: '👤'
     },

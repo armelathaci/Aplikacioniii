@@ -78,7 +78,7 @@ const AIChat = ({onNavigate, user }) => {
     try {
       // Send message directly to n8n webhook
       try {
-        const data = await sendMessageToFinbot(currentInput, user.userId);
+        const data = await sendMessageToFinbot(currentInput, user.id);
         
         const aiContent = data.reply || data.content || data.raw || "Nuk mora përgjigje nga n8n.";
         

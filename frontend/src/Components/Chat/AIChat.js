@@ -93,15 +93,7 @@ const AIChat = ({onNavigate, user }) => {
         console.error("n8n webhook failed:", error);
         setConnectionStatus('error');
         
-        // Retry logic
-        if (retryCount < 2) {
-          setTimeout(() => {
-            setRetryCount(prev => prev + 1);
-            handleSendMessage();
-          }, 2000);  // <-- Kjo pret 2 sekonda
-          return;
-        }
-        
+        // Shfaq gabimin menjëherë pa retry
         const errorMessage = {
           id: Date.now() + 1,
           text: "Për momentin nuk mund të lidhem me asistentin. Provoni më vonë.",
